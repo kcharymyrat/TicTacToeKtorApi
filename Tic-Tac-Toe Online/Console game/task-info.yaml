@@ -461,13 +461,8 @@ files:
     visible: true
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30563#comment
-status: Failed
+status: Solved
 feedback:
-  message: "Wrong answer in test #1\n\nExpected:\nSecond player&#39;s name: Player2\n\
-    Found:\nSecond player&#39;s name: Player2\n\nPlease find below the output of your\
-    \ program during this failed test.\nNote that the &#39;&gt;&#39; character indicates\
-    \ the beginning of the input line.\n\n---\n\nEnter the first player&#39;s name\
-    \ (Player1 by default)\n&gt; \nFirst player&#39;s name: Player1 \nEnter the second\
-    \ player&#39;s name (Player2 by default)\n&gt; \nSecond player&#39;s name: Player2"
-  time: "Sat, 30 Sep 2023 06:03:00 UTC"
+  message: Congratulations!
+  time: "Sat, 30 Sep 2023 15:47:44 UTC"
 record: -1

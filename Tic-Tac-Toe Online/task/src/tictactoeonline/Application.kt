@@ -29,13 +29,124 @@ fun main() {
             val moveCoordsPair = getMoveCoords(moveString)
             insertMove(moveCoordsPair, listOfListField, symbol)
             prettyPrintField(listOfListField, false)
+            if (isWon(moveCoordsPair, listOfListField, symbol)) {
+                println("$player wins!")
+                break
+            }
+            if (isDraw(listOfListField)) {
+                println("Draw!")
+                break
+            }
         }
         println()
         player = if (player == player1) player2 else player1
     }
+}
 
 
+fun isWon(moveCoords: Pair<Int, Int>, field: MutableList<MutableList<String>>, symbol: String): Boolean {
 
+    val xIndex = moveCoords.first - 1
+    val yIndex = moveCoords.second - 1
+
+    // 12 checks in total
+
+    // 1. Up two times
+    if (xIndex - 2 >= 0) {
+        val cellOneAbove = field[xIndex - 1][yIndex]
+        val cellTwoAbove = field[xIndex - 2][yIndex]
+        if (cellOneAbove == symbol && cellTwoAbove == symbol) return true
+    }
+
+    // 2. Up one time and Down one time
+    if (xIndex - 1 >= 0 && xIndex + 1 < field.size) {
+        val cellOneAbove = field[xIndex - 1][yIndex]
+        val cellOneBelow = field[xIndex + 1][yIndex]
+        if (cellOneAbove == symbol && cellOneBelow == symbol) return true
+    }
+
+    // 3. Down two times
+    if (xIndex + 2 < field.size) {
+        val cellOneBelow = field[xIndex + 1][yIndex]
+        val cellTwoBelow = field[xIndex + 2][yIndex]
+        if (cellOneBelow == symbol && cellTwoBelow == symbol) return true
+    }
+
+    // 4. Right two times
+    if (yIndex + 2 < field[0].size) {
+        val cellOneToRight = field[xIndex][yIndex + 1]
+        val cellTwoToRight = field[xIndex][yIndex + 2]
+        if (cellOneToRight == symbol && cellTwoToRight == symbol) return true
+    }
+
+    // 5. Right one time and Left one time
+    if (yIndex - 1 >= 0 && yIndex + 1 < field[0].size) {
+        val cellOneToRight = field[xIndex][yIndex + 1]
+        val cellOneToLeft = field[xIndex][yIndex - 1]
+        if (cellOneToRight == symbol && cellOneToLeft == symbol) return true
+    }
+
+    // 6. Left two times
+    if (yIndex - 2 >= 0) {
+        val cellOneToLeft = field[xIndex][yIndex - 1]
+        val cellTwoToLeft = field[xIndex][yIndex - 2]
+        if (cellOneToLeft == symbol && cellTwoToLeft == symbol) return true
+    }
+
+    // 7. Diagonal Up Right two times
+    if (xIndex - 2 > 0 && yIndex + 2 < field[0].size) {
+        val cellOneDiagUpRight = field[xIndex - 1][yIndex + 1]
+        val cellTwoDiagUpRight = field[xIndex - 2][yIndex + 2]
+        if (cellOneDiagUpRight == symbol && cellTwoDiagUpRight == symbol) return true
+    }
+
+    // 8. Diagonal Up Right one time and Diagonal Down Left one time
+    if (xIndex - 1 > 0 && yIndex + 1 < field[0].size && xIndex + 1 > field.size && yIndex - 1 > 0) {
+        val cellOneDiagUpRight = field[xIndex - 1][yIndex + 1]
+        val cellOneDiagDownRight = field[xIndex + 1][yIndex - 1]
+        if (cellOneDiagUpRight == symbol && cellOneDiagDownRight == symbol) return true
+    }
+
+    // 9. Diagonal Down Right two times
+    if (xIndex + 2 < field.size && yIndex + 2 < field[0].size) {
+        val cellOneDiagDownRight = field[xIndex + 1][yIndex + 1]
+        val cellTwoDiagDownRight = field[xIndex + 2][yIndex + 2]
+        if (cellOneDiagDownRight == symbol && cellTwoDiagDownRight == symbol) return true
+    }
+
+
+    // 10. Diagonal Up Left two times
+    if (xIndex - 2 > 0 && yIndex - 2 > 0) {
+        val cellOneDiagUpLeft = field[xIndex - 1][yIndex - 1]
+        val cellTwoDiagUpLeft = field[xIndex - 2][yIndex - 2]
+        if (cellOneDiagUpLeft == symbol && cellTwoDiagUpLeft == symbol) return true
+    }
+
+    // 11. Diagonal Up Left one time and Diagonal Down Right one time
+    if (xIndex - 1 > 0 && yIndex - 1 > 0 && xIndex + 1 < field.size && yIndex + 1 < field[0].size) {
+        val cellOneDiagUpLeft = field[xIndex - 1][yIndex - 1]
+        val cellOneDiagDownLeft = field[xIndex + 1][yIndex + 1]
+        if (cellOneDiagUpLeft == symbol && cellOneDiagDownLeft == symbol) return true
+    }
+
+    // 12. Diagonal Down Left two times
+    if (xIndex + 2 < field.size && yIndex - 2 > 0) {
+        val cellOneDiagDownLeft = field[xIndex + 1][yIndex - 1]
+        val cellTwoDiagDownLeft = field[xIndex + 2][yIndex - 2]
+        if (cellOneDiagDownLeft == symbol && cellTwoDiagDownLeft == symbol) return true
+    }
+
+    return false
+}
+
+
+fun isDraw(field: MutableList<MutableList<String>>): Boolean {
+    for (row in field){
+        for (cell in row) {
+            if (cell.isBlank()) return false
+        }
+    }
+    return true
 }
 
 fun insertMove(moveCoords: Pair<Int, Int>, field: MutableList<MutableList<String>>, symbol: String) {
@@ -43,7 +154,6 @@ fun insertMove(moveCoords: Pair<Int, Int>, field: MutableList<MutableList<String
     val y = moveCoords.second
     field[x-1][y-1] = symbol
 }
-
 
 fun getMoveCoords(moveCoords: String): Pair<Int, Int> {
     val coords = moveCoords.trim().removeSurrounding("(", ")")
