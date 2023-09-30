@@ -1,0 +1,8 @@
+type: framework
+content:
+  - Console game
+  - Moving to the server
+  - Adding authorization and room mechanism
+  - Adding private rooms
+  - History and pagination
+current_task: 0

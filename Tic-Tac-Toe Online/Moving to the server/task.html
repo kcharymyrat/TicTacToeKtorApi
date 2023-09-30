@@ -1,0 +1,388 @@
+<div class="step-text">
+<h5 id="description">Description</h5>
+<p>You have already implemented a console version of tic-tac-toe, which allows two people to play on the same computer. Online games are in great demand, so it's time to move our game to the Internet. It will make your game accessible to players on different devices with internet access.</p>
+<p></p><div class="alert alert-primary">I this stage, you do not need to implement registration/authorization, raise the database and process many games simultaneously. You need to implement interaction with your game not through the console but through Ktor's endpoints.</div>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, your goal is to run the <code class="language-json">Ktor</code> application and create several endpoints.</p>
+<ul>
+<li>Create and run the <code class="language-json">Ktor</code> application on the <code class="language-json">28852</code> port;</li>
+<li>Implement the following API endpoints:
+    <ul>
+<li> <code class="language-json">POST /game</code> for starting a new game. This method accepts a <code class="language-json">player1</code>, <code class="language-json">player2</code>, and <code class="language-json">size</code> as JSON.</li>
+</ul>
+</li>
+</ul>
+<p>For example:</p>
+<pre><code class="language-json">{
+    "player1": "Carl",
+    "player2": "Mike",
+    "size": "4x3"
+}</code></pre>
+<p>The response should be as follows:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "New game started",
+    "player1": &lt;Name of 1st player&gt;,
+    "player2": &lt;Name of 2nd player&gt;,
+    "size": &lt;Field size&gt;
+}</code></pre>
+<p>If the user sent invalid data or did not send the appropriate fields at all, then set the default values:</p>
+<ul>
+<li><code class="language-json">Player1</code> for the <code class="language-json">player1</code> field;</li>
+<li><code class="language-json">Player2</code> for the <code class="language-json">player2</code> field;</li>
+<li><code class="language-json">3x3</code> for the <code class="language-json">size</code> field;
+    <ul>
+<li><code class="language-json">GET /game/status</code> for getting the current game status. This method does not accept parameters. The response should be as follows:</li>
+</ul>
+</li>
+</ul>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": &lt;status string&gt;,
+    "field": &lt;Field array&gt;,
+    "player1": &lt;Name of 1st player&gt;,
+    "player2": &lt;Name of 2nd player&gt;,
+    "size": &lt;Field size&gt;
+}</code></pre>
+<p><code class="language-json">game_status</code> can have the following values depending on the current state of the game:</p>
+<ul>
+<li><code class="language-json">game not started</code> (in this case, <code class="language-json">field</code>, <code class="language-json">player1</code>, <code class="language-json">player2</code> and <code class="language-json">size</code> fields may be missing or take the default values)</li>
+<li><code class="language-json">1st player's move</code></li>
+<li><code class="language-json">2nd player's move</code></li>
+<li><code class="language-json">1st player won</code></li>
+<li><code class="language-json">2nd player won</code></li>
+<li><code class="language-json">draw</code></li>
+</ul>
+<p><code class="language-json">field</code> contains a two-dimensional array that represents the current playing field.</p>
+<p>For example, if we have the following playing field:</p>
+<pre><code class="language-no-highlight">|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+|   |   | X |
+|---|---|---|</code></pre>
+<p>The corresponding <code class="language-json">field</code> array in this case:</p>
+<pre><code class="language-json">[
+    ["X", "O", " "],
+    [" ", "O", " "],
+    [" ", " ", "X"]
+]</code></pre>
+<ul>
+<li><code class="language-json">POST /game/move</code> for making a move.</li>
+</ul>
+<p>This method should make a move for the player whose turn it is to move. It accepts a <code class="language-json">move</code> as JSON. For example:</p>
+<pre><code class="language-json">{
+    "move": "(2,3)"
+}</code></pre>
+<p>If the move is successful, the response should be as follows:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+<p>If the move is incorrect or impossible (or the game has not started), the response should be:</p>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+<h5 id="examples">Examples</h5>
+<p><strong>Example 1:</strong></p>
+<ol>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "New game started",
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "1st player's move",
+    "field": [
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "2nd player's move",
+    "field": [
+        ["X", " ", " ", " "],
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,1)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "1st player's move",
+    "field": [
+        ["X", " ", " ", " "],
+        ["O", " ", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,2)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,2)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,3)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,3)"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "1st player won",
+    "field": [
+        ["X", "X", "X", " "],
+        ["O", "O", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "Bob",
+    "player2": "John",
+    "size": "3x4"
+}</code></pre>
+</li>
+</ol>
+<p><strong>Example 2:</strong></p>
+<ol>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "game not started"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "New game started",
+    "player1": "Player1",
+    "player2": "Player2",
+    "size": "3x3"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(100,100)"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,1)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,2)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,2)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(3,3)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(2,3)"
+}</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/status</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em> <code class="language-json">200 OK</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_status": "2nd player won",
+    "field": [
+        ["X", "X", " "],
+        ["O", "O", "O"],
+        [" ", " ", "X"]
+    ],
+    "player1": "Player1",
+    "player2": "Player2",
+    "size": "3x3"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(3,1)"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code><br/>
+<em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+</li>
+</ol>
+</div>

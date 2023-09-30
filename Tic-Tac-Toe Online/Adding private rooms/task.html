@@ -1,0 +1,270 @@
+<div class="step-text">
+<h5 id="description">Description</h5>
+<p>Your game already has authorization and a game room system. It's time to implement some other vital mechanisms to improve our game.</p>
+<p>First, at the moment, all information about users and games is stored in RAM. It means it will be lost at the first server restart, and the players must register in the game again. This is not convenient. To fix this, you should store the data of users and games in a database.</p>
+<p>Secondly, now the rooms can join any authorized players, and room creators have no control over this. You should allow creating private rooms, which can only be joined by an invitation link.</p>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, move the data into the database and implement the mechanism of private rooms.</p>
+<ul>
+<li>Run a <code class="language-json">H2</code> database and connect the application to it. Ensure that data about users and games are not lost when the server is restarted. The Ktor documentation has <a href="https://ktor.io/docs/interactive-website-add-persistence.html" rel="noopener noreferrer nofollow" target="_blank">a tutorial</a> on how to connect the H2 database and interact with it. All data will be stored in the <em>build/db.mv.db</em> file and will not be lost during a server restart.</li>
+<li>Edit <code class="language-json">POST /game</code>. In the request body, add the <code class="language-json">private</code> field (accepting <code class="language-json">True</code>/<code class="language-json">False</code> values), which determines whether the created game will be private.</li>
+</ul>
+<p>The Request <em>body</em> looks like this:</p>
+<pre><code class="language-json">{
+    "player1": &lt;email of 1st player or ""&gt;,
+    "player2": &lt;email of 2nd player or ""&gt;,
+    "size": &lt;field size&gt;,
+    "private": &lt;true/false&gt;
+}</code></pre>
+<p>If <code class="language-json">private</code> is <code class="language-json">true</code>, add a <code class="language-json">token</code> field to the Response<em> body</em>, using which another player can join the game room. Generate a random 32-character string as a token. The response should be as follows:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_id": &lt;new game id&gt;,
+    "status": "New game started",
+    "player1": &lt;email of 1st player or ""&gt;,
+    "player2": &lt;email of 2nd player or ""&gt;,
+    "size": &lt;field size&gt;,
+    "private": &lt;true/false&gt;,
+    "token": &lt;32-character string (if private=false leave empty string)&gt;
+}</code></pre>
+<p>Leave the error response on game creation (and the condition under which game creation is considered unsuccessful) unchanged.</p>
+<ul>
+<li>Edit <code class="language-json">POST /game/&lt;game_id&gt;/join</code></li>
+</ul>
+<p>Change the endpoint address so that it contains the token of the game you want to join: <code class="language-json">POST /game/&lt;game_id&gt;/join/&lt;token&gt;</code></p>
+<p>If the user tries to join a private game with an incorrect/missing token, the server must send an error response (the same as in the previous stage). If the room is not private, there is no need to provide a token, and the request route should look the same as before. The query body parameter remains the same. The response body is also left unchanged.</p>
+<ul>
+<li>Edit <code class="language-json">GET /games</code></li>
+</ul>
+<p>In the returned game objects, add the <code class="language-json">private</code> field that indicates whether the game is private or not:</p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">[
+    {
+        "game_id": &lt;game id&gt;,
+        "player1": &lt;email of 1st player or ""&gt;,
+        "player2": &lt;email of 2nd player or ""&gt;,
+        "size": &lt;field size&gt;,
+        "private": &lt;true/false&gt;
+    },
+    ...
+]</code></pre>
+<ul>
+<li>Edit <code class="language-json">GET /game/&lt;game_id&gt;/status</code></li>
+</ul>
+<p>In the returned status object, add a <code class="language-json">private</code> field that indicates whether the game is private or not:</p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "game_id": &lt;game id&gt;,
+    "game_status": &lt;status code&gt;,
+    "field": &lt;field array&gt;,
+    "player1": &lt;email of 1st player or ""&gt;,
+    "player2": &lt;email of 2nd player or ""&gt;,
+    "size": &lt;field size&gt;,
+    "private": &lt;true/false&gt;,
+    "token": &lt;32-character string (if private=false leave empty string)&gt;
+}</code></pre>
+<p>Since only users in the game room can get the status, it is safe to provide the token field.</p>
+<h5 id="examples">Examples</h5>
+<p><strong>Example 1:</strong></p>
+<ol>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3",
+    "private": true
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3",
+    "private": true,
+    "token": "fr67sl4g5fltwwsgjl4ftyj9t20062ia"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/1/join</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">403 Forbidden</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/join/fr67sl4g5fltwwsgjl4ftyj9t20062ia</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game succeeded"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/1/status</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "game_status": "1st player's move",
+    "field": [
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "carl@example.com",
+    "player2": "mike@example.com",
+    "size": "4x3",
+    "private": true
+}</code></pre>
+</li>
+</ol>
+<p><strong>Example 2:</strong></p>
+<ol>
+<li> Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>
+<p><strong>The server reboots</strong>.<br/>
+      That is, the ktor application closes and starts up again.</p>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false,
+    "token": ""
+}</code></pre>
+</li>
+<li>
+<p><strong>The server reboots</strong>.<br/>
+      That is, the ktor application closes and starts up again.</p>
+</li>
+<li>
+<p>Request: <code class="language-json">GET /games</code><br/>
+<em>Authorization header:</em></p>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<p><em>Request body</em>:</p>
+<pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">[
+    {
+        "game_id": 1,
+        "player1": "",
+        "player2": "artem@hyperskill.org",
+        "size": "3x3",
+        "private": false
+    }
+]</code></pre>
+</li>
+</ol>
+</div>

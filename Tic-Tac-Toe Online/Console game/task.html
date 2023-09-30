@@ -1,0 +1,304 @@
+<div class="step-text">
+<h5 id="description">Description</h5>
+<p>Everyone knows the <a href="https://en.wikipedia.org/wiki/Tic-tac-toe" rel="noopener noreferrer nofollow" target="_blank">rules</a> of tic-tac-toe. In this stage, implement a console version of tic-tac-toe to allow two players to play on the same computer. In addition, players should be able to set an arbitrary game field size.</p>
+<p><img alt="" height="334" name="Рисунок2.png" src="https://ucarecdn.com/abb5ecc4-4d77-472c-874c-dccfe7547198/" width="288"/></p>
+<h5 id="objectives">Objectives</h5>
+<p>You need to implement a console game of tic-tac-toe. Interaction with the program should look as follows:</p>
+<ol>
+<li>Upon starting, the program asks for the name of the first and second players. If the user pressed <em>Enter </em>and did not enter a name, set the names to <code class="java">Player1</code> and <code class="java">Player2</code>.</li>
+<li>After that, the program asks for the game field size. If the user does not enter anything (or enters the wrong size), set it to <code class="java">3x3</code>.<br/>
+    What's the wrong size? A wrong size is a size that does not match the <code class="java">AxB</code> pattern, where <code class="java">A</code> and <code class="java">B</code> are positive integers. Second, the map size cannot be less than <code class="java">3</code> in two directions simultaneously. In other words, at least one size must be greater than or equal to 3: <code class="java">A&gt;=3 || B&gt;=3</code>. For example, <code class="java">1x10</code> is the correct size, and <code class="java">2x2</code> is the incorrect one.</li>
+<li>Regardless of map size, a player wins with three in a row (or diagonally).</li>
+<li>The program outputs an empty playing field with the corresponding sizes.</li>
+<li>After that, the game starts, where players are prompted to enter their moves in turn.</li>
+<li>After each move, the program displays the updated playing field.</li>
+<li>If the user has entered an incorrect move, the program displays <code class="java">Enter the correct move</code> and prompts to enter the move again.</li>
+<li>As soon as one of the players wins, the program must output <code class="java">&lt;name&gt; wins!</code>, where <code class="java">&lt;name&gt;</code> is the name of the player who won.</li>
+<li>If the game ends with a draw, output <code class="java">Draw!</code></li>
+</ol>
+<p>The input/output of your program should be done according to the following examples.</p>
+<h5 id="examples">Examples</h5>
+<p>The greater-than symbol followed by a space (<code class="java">&gt; </code>) represents the user input. Note that it's not part of the input.</p>
+<p><strong>Example 1:</strong></p>
+<pre><code class="language-no-highlight">Enter the first player's name (Player1 by default)
+&gt;Bob
+First player's name: Bob
+Enter the second player's name (Player2 by default)
+&gt;John
+Second player's name: John
+
+Enter the field size (3x3 by default)
+&gt;sdfs
+Field size: 3x3
+
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+
+Enter Bob's move as (x,y)
+&gt;(1,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter John's move as (x,y)
+&gt;(2,3)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   |   | O |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Bob's move as (x,y)
+&gt;sdfsdf
+Wrong move entered
+Enter Bob's move as (x,y)
+&gt;(5,5)
+Wrong move entered
+Enter Bob's move as (x,y)
+&gt;(2,3)
+Wrong move entered
+Enter Bob's move as (x,y)
+&gt;(2,2)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   | X | O |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter John's move as (x,y)
+&gt;(3,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   | X | O |
+|---|---|---|
+| O |   |   |
+|---|---|---|
+
+Enter Bob's move as (x,y)
+&gt;(3,3)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   | X | O |
+|---|---|---|
+| O |   | X |
+|---|---|---|
+
+Bob wins!</code></pre>
+<p><strong>Example 2:</strong></p>
+<pre><code class="language-no-highlight">Enter the first player's name (Player1 by default)
+&gt;
+First player's name: Player1
+Enter the second player's name (Player2 by default)
+&gt;
+Second player's name: Player2
+
+Enter the field size (3x3 by default)
+&gt;3x4
+Field size: 3x4
+
+|---|---|---|---|-y
+|   |   |   |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+|
+x
+
+Enter Player1's move as (x,y)
+&gt;(2,2)
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+|   | X |   |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(1,2)
+Wrong move entered
+Enter Player2's move as (x,y)
+&gt;(1,2)
+|---|---|---|---|
+|   | O |   |   |
+|---|---|---|---|
+|   | X |   |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+
+Enter Player1's move as (x,y)
+&gt;(2,3)
+|---|---|---|---|
+|   | O |   |   |
+|---|---|---|---|
+|   | X | X |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(1,3)
+|---|---|---|---|
+|   | O | O |   |
+|---|---|---|---|
+|   | X | X |   |
+|---|---|---|---|
+|   |   |   |   |
+|---|---|---|---|
+
+Enter Player1's move as (x,y)
+&gt;(3,2)
+|---|---|---|---|
+|   | O | O |   |
+|---|---|---|---|
+|   | X | X |   |
+|---|---|---|---|
+|   | X |   |   |
+|---|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(1,4)
+|---|---|---|---|
+|   | O | O | O |
+|---|---|---|---|
+|   | X | X |   |
+|---|---|---|---|
+|   | X |   |   |
+|---|---|---|---|
+
+Player2 wins!</code></pre>
+<p><strong>Example 3:</strong></p>
+<pre><code class="language-no-highlight">Enter the first player's name (Player1 by default)
+&gt;Donald
+First player's name: Donald
+Enter the second player's name (Player2 by default)
+&gt;
+Second player's name: Player2
+
+Enter the field size (3x3 by default)
+&gt;2x2
+Field size: 3x3
+
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+
+Enter Donald's move as (x,y)
+&gt;(3,3)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   | X |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(2,2)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+|   |   | X |
+|---|---|---|
+
+Enter Donald's move as (x,y)
+&gt;(1,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+|   |   | X |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(1,2)
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+|   |   | X |
+|---|---|---|
+
+Enter Donald's move as (x,y)
+&gt;(3,2)
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+|   | X | X |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(3,1)
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+| O | X | X |
+|---|---|---|
+
+Enter Donald's move as (x,y)
+&gt;(1,3)
+|---|---|---|
+| X | O | X |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+| O | X | X |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt;(2,3)
+|---|---|---|
+| X | O | X |
+|---|---|---|
+|   | O | O |
+|---|---|---|
+| O | X | X |
+|---|---|---|
+
+Enter Donald's move as (x,y)
+&gt;(2,1)
+|---|---|---|
+| X | O | X |
+|---|---|---|
+| X | O | O |
+|---|---|---|
+| O | X | X |
+|---|---|---|
+
+Draw!</code></pre>
+
+</div>

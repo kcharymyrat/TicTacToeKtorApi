@@ -1,0 +1,348 @@
+<div class="step-text">
+<h5 id="description">Description</h5>
+<p>Your game is almost ready. Add two more things to make the game more convenient: game history and pagination.</p>
+<p>Players should have access to the history of the results of their games. Also, these results should have pagination so that the user does not have to load avaste list every time. For the same reason, pagination should also be added to the global list of all games.</p>
+<h5 id="objectives">Objectives</h5>
+<ul>
+<li>Add pagination to the list of all games.</li>
+</ul>
+<p>To get all existing games in the service, the client sends the <code class="language-json">GET</code> request to <code class="language-json">/games</code> as before. But here is the problem: the number of stored games can be huge since your service is so popular among many users. In this regard, your API should return only ten games at once and supports the ability to specify which portion of games is needed.</p>
+<p></p><div class="alert alert-warning">Use the <a href="https://github.com/JetBrains/Exposed/wiki/DSL#limit" rel="noopener noreferrer nofollow" target="_blank">limit</a> exposed method for pagination.</div>
+<p>The response should contain a JSON with games (inside <code class="language-json">content</code>) and some additional metadata. For example, each game in the array must have the following fields: <code class="language-json">game_id</code>, <code class="language-json">player1</code>, <code class="language-json">player2</code>, <code class="language-json">size</code>, <code class="language-json">private</code>):</p>
+<pre><code class="language-json">{
+    "totalPages":1,
+    "totalElements":3,
+    "page":0,
+    "size":10,
+    "numberOfElements":3,
+    "content":[
+        {"game_id":1,"player1":"artem@gmail.com","player2":"mike@gmail.com",
+         "size":"3x3","private":false},
+        {"game_id":2,"player1":"nlex@example.com","player2":"sam@email.com",
+         "size":"4x4","private":false},
+        {"game_id":3,"player1":"bob@ya.ru","player2":"",
+         "size":"3x8","private":true}
+    ]
+}</code></pre>
+<p>Where:</p>
+<p><code class="language-json">totalPages</code> is the total number of pages<br/>
+<code class="language-json">totalElements</code> is the total number of elements<br/>
+<code class="language-json">page</code> is the number of the current page<br/>
+<code class="language-json">size</code> is the standard number of elements on the page<br/>
+<code class="language-json">numberOfElements</code> is the number of elements on the current page<br/>
+<code class="language-json">content</code> is an array of results</p>
+<p>The API should support the navigation through pages by passing the <code class="language-json">page</code> parameter ( <code class="language-json">/games?page=1</code>). The first page is 0 since pages start from zero. If there are no games, <code class="language-json">content</code> is empty <code class="language-json">[]</code>.</p>
+<ul>
+<li>Implement <code class="language-json">GET /games/my</code> for getting the games played by the user.</li>
+</ul>
+<p>The request body is blank (the user is identified through the JWT token). The method aims to return the status of all games the current user plays. Pagination should also be supported. For example, each game in the array must contain the following fields: <code class="language-json">game_id</code>, <code class="language-json">game_status</code>, <code class="language-json">field</code>, <code class="language-json">player1</code>, <code class="language-json">player2</code>, <code class="language-json">size</code>, <code class="language-json">private</code>, <code class="language-json">token</code>):</p>
+<pre><code class="language-json">{
+    "totalPages":1,
+    "totalElements":2,
+    "page":0,
+    "size":10,
+    "numberOfElements":2,
+    "content":[
+        {
+            "game_id":1,
+            "game_status": "1st player won",
+            "field":[
+                ["X","X","X"],
+                ["O","O"," "],
+                [" "," "," "]
+            ],
+            "player1":"artem@gmail.com",
+            "player2":"mike@gmail.com",
+            "size":"3x3",
+            "private":false,
+            "token": ""
+        },
+        {
+            "game_id":2,
+            "game_status": "2nd player won",
+            "field":[
+                ["X","X"," ","X"],
+                ["O","O","O"," "],
+                [" "," "," "," "],
+                [" "," "," "," "]
+            ],
+            "player1":"artem@gmail.com",
+            "player2":"sam@email.com",
+            "size":"4x4",
+            "private":true,
+            "token": "egcgeccj6wniih56oors3ac5m5l1ls8w"
+        }
+    ]
+}</code></pre>
+<h5 id="examples">Examples</h5>
+<p><strong>Example 1:</strong></p>
+<ol>
+<li> Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false,
+    "token": ""
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em>
+<pre><code class="language-json">{
+    "game_id": 2,
+    "status": "New game started",
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false,
+    "token": ""
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em>
+<pre><code class="language-json">{
+    "game_id": 3,
+    "status": "New game started",
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3",
+    "private": false,
+    "token": ""
+}</code></pre>
+</li>
+<li>
+<p>Request: <code class="language-json">GET /games</code><br/>
+<em>Authorization header:</em></p>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<p><em>Request body</em>:</p>
+<pre><code class="language-json">{ }</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "totalPages":1,
+    "totalElements":3,
+    "page":0,
+    "size":10,
+    "numberOfElements":3,
+    "content": [
+        {
+            "game_id": 1,
+            "player1": "",
+            "player2": "artem@hyperskill.org",
+            "size": "3x3",
+            "private": false
+        },
+        {
+            "game_id": 2,
+            "player1": "",
+            "player2": "artem@hyperskill.org",
+            "size": "3x3",
+            "private": false
+        },
+        {
+            "game_id": 3,
+            "player1": "",
+            "player2": "artem@hyperskill.org",
+            "size": "3x3",
+            "private": false
+        }
+    ]
+}</code></pre>
+</li>
+</ol>
+<p> <strong>Example 2:</strong></p>
+<ol>
+<li> Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3",
+    "private": true
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3",
+    "private": true,
+    "token": "fr67sl4g5fltwwsgjl4ftyj9t20062ia"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/1/join</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">403 Forbidden</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/join/fr67sl4g5fltwwsgjl4ftyj9t20062ia</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game succeeded"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /games/my</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "totalPages":1,
+    "totalElements":1,
+    "page":0,
+    "size":10,
+    "numberOfElements":1,
+    "content":[
+        {
+            "game_id": 1,
+            "game_status": "1st player's move",
+            "field": [
+                [" ", " ", " ", " "],
+                [" ", " ", " ", " "],
+                [" ", " ", " ", " "]
+            ],
+            "player1": "carl@example.com",
+            "player2": "mike@example.com",
+            "size": "4x3",
+            "private": true,
+            "token": "fr67sl4g5fltwwsgjl4ftyj9t20062ia"
+        }
+    ]
+}</code></pre>
+</li>
+</ol>
+</div>

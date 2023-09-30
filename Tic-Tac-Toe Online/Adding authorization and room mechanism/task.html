@@ -1,0 +1,606 @@
+<div class="step-text">
+<h5 id="description">Description</h5>
+<p>We already have a Ktor game server that allows two players to play tic-tac-toe through requests to Ktor endpoints. So far, we can maintain only one simultaneous game. Besides, any user on the Internet can make moves. It's time to fix that.</p>
+<h5 id="objectives">Objectives</h5>
+<p>In this stage, add authorization and the room mechanism to the game. This will allow players to log into the game under their accounts and create or join game rooms. Each game room will have its game state.</p>
+<p>Implement the following API endpoints:</p>
+<ul>
+<li><strong> </strong><code class="language-json">POST /signup</code> for registration.</li>
+</ul>
+<p>This method accepts an <code class="language-json">email</code> and <code class="language-json">password</code> as JSON. If the registration was successful, the response should be the following:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+<p> If the registration failed, the response should be:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Registration failed"
+}</code></pre>
+<p>Registration is unsuccessful if:</p>
+<ul>
+<li><code class="language-json">email</code> or <code class="language-json">password</code> in the request is blank (or missing)</li>
+<li>there is an attempt to register a user with an existing email</li>
+</ul>
+<p>For simplicity, you don't need to check the email's password strength and correctness.</p>
+<ul>
+<li><code class="language-json">POST /signin</code> for authorization.</li>
+</ul>
+<p>This method accepts an <code class="language-json">email</code> and a <code class="language-json">password</code> as JSON. If an authorization was successful, the response is:</p>
+<p><em>Response code: </em><code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": &lt;JWT token&gt;
+}</code></pre>
+<p>If the authorization failed, this response follows:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Authorization failed"
+}</code></pre>
+<p>To pass the check, use the following parameters to generate JWT tokens:</p>
+<ul>
+<li>Token header:
+    <pre><code class="language-json">{
+    "alg": "HS256",
+    "typ": "JWT"
+}</code></pre>
+</li>
+<li>
+<p>Token payload:</p>
+<pre><code class="language-json">{
+    "email": &lt;user's email&gt;
+}</code></pre>
+<p><em>Payload usually contains token expiration time in real projects, but we will not include it for simplicity.</em></p>
+</li>
+<li>
+<p>Token signature:</p>
+<pre><code class="language-no-highlight">HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  ut920BwH09AOEDx5
+)</code></pre>
+</li>
+</ul>
+<p></p><div class="alert alert-warning">Where <code class="language-json">ut920BwH09AOEDx5</code> is the JWT secret key. It is only used in this educational project. When you make your applications, use your key instead!</div>
+<p>With the received token, the client will get access to all endpoints (except <code class="language-json">/signup</code> and <code class="language-json">/signin</code>) using the <code class="language-json">Authorization</code> header:</p>
+<pre><code class="language-json">Authorization: Bearer &lt;token&gt;</code></pre>
+<ul>
+<li>Handling authorization:</li>
+</ul>
+<p>Add the JWT token validation to all endpoints (except <code class="language-json">/signup</code> and <code class="language-json">/signin</code>) so that unauthorized users cannot access them. If the token check fails, the response should be as follows:</p>
+<p><em>Response code: </em><code class="language-json">401 Unauthorized</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Authorization failed"
+}</code></pre>
+<ul>
+<li>Edit <code class="language-json">POST /game</code><strong> </strong></li>
+</ul>
+<p>This method accepts a <code class="language-json">player1</code> or <code class="language-json">player2</code>, and <code class="language-json">size</code> as JSON. But now the <code class="language-json">player1</code> and <code class="language-json">player2</code> parameters should contain the player's email instead of an arbitrary name. If a player wants to create a game and play for crosses (<code class="language-json">X</code>), they put their email in <code class="language-json">player1</code>, leaving <code class="language-json">player2</code> empty. For example:</p>
+<pre><code class="language-json">{
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3"
+}</code></pre>
+<p>If a player wants to create a game and play for noughts (<code class="language-json">O</code>), they put the email in <code class="language-json">player2</code>, leaving <code class="language-json">player1</code> empty. For example:</p>
+<pre><code class="language-json">{
+    "player1": "",
+    "player2": "carl@example.com",
+    "size": "4x3"
+}</code></pre>
+<p>In the response body, add the <code class="language-json">game_id</code> of the created game room (<code class="language-json">game_id</code> must be assigned by your server and can be, for example, the ordinal number of the game created):</p>
+<pre><code class="language-json">{
+    "game_id": &lt;new game id&gt;,
+    "status": "New game started",
+    "player1": &lt;email of 1st player or ""&gt;,
+    "player2": &lt;email of 2nd player or ""&gt;,
+    "size": &lt;field size&gt;
+}</code></pre>
+<p>If the operation fails, this response follows:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Creating a game failed"
+}</code></pre>
+<p>Creating a game is considered unsuccessful if <code class="language-json">player1</code> and <code class="language-json">player2</code> do not contain the email of the user who is trying to develop the game</p>
+<ul>
+<li><code class="language-json">GET /games</code> for getting a list of all games (game rooms).</li>
+</ul>
+<p>This method does not accept parameters. The response should be as follows:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">[
+    {
+        "game_id": &lt;game id&gt;,
+        "player1": &lt;email of 1st player or ""&gt;,
+        "player2": &lt;email of 2nd player or ""&gt;,
+        "size": &lt;field size&gt;
+    },
+    ...
+]</code></pre>
+<p>If a room is created, but the opponent has not joined it, the field of the corresponding player should be empty (<code class="language-json">""</code>)</p>
+<ul>
+<li><code class="language-json">POST /game/&lt;game_id&gt;/join</code> for joining a game created by another player.</li>
+</ul>
+<p>Where <code class="language-json">&lt;game_id&gt;</code> is the path parameter containing the id of the game room the player wants to join. The request body does not have parameters. If joining the game room was successful, the response should be as follows:</p>
+<p><em>Response code: </em> <code class="language-json">200 OK</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Joining the game succeeded"
+}</code></pre>
+<p>If the operation fails, this response follows:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Joining the game failed"
+}</code></pre>
+<p>Joining a game is considered unsuccessful if a game room with this id does not exist or the game room is already occupied (<code class="language-json">player1</code> and <code class="language-json">player2</code> fields do not contain the empty string <code class="language-json">""</code>)</p>
+<ul>
+<li>Edit<strong> </strong><code class="language-json">GET /game/status</code></li>
+</ul>
+<p>Change the address of the endpoint so that it contains the id of the game whose status you want to get:</p>
+<p><code class="language-json">GET /game/&lt;game_id&gt;/status</code></p>
+<p>Also, add this id to the body of the <em>response</em>:</p>
+<pre><code class="language-json">{
+    "game_id": &lt;game id&gt;,
+    "game_status": &lt;status string&gt;,
+    "field": &lt;field array&gt;,
+    "player1": &lt;email of 1st player or ""&gt;,
+    "player2": &lt;email of 2nd player or ""&gt;,
+    "size": &lt;field size&gt;
+}</code></pre>
+<p>If the operation fails, this response follows:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Failed to get game status"
+}</code></pre>
+<p>Getting game status is considered unsuccessful if the user who is trying to get the status has an email different from <code class="language-json">player1</code> and <code class="language-json">player2</code> or the game with the given id does not exist</p>
+<ul>
+<li>Edit<strong> </strong><code class="language-json">POST /game/move</code></li>
+</ul>
+<p>The query body parameter remains the same. Change the endpoint address so that it contains the id of the game in which you want to make your move: <code class="language-json">POST /game/&lt;game_id&gt;/move</code></p>
+<p>If a player tries to make a move for another player (with an email different from his own), the server's response should be as follows:</p>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "You have no rights to make this move"
+}</code></pre>
+<p>If the user has the right to make a move, but the move is incorrect or impossible, the response should be:</p>
+<p><em>Response code: </em><code class="language-json">400 Bad Request</code></p>
+<p><em>Response body:</em></p>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+<p></p><div class="alert alert-primary">In this stage, all data can be stored in the server RAM (it is not yet necessary to raise the database)</div>
+<h5 id="examples">Examples</h5>
+<p><strong>Example 1:</strong></p>
+<ol>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3"
+}</code></pre>
+<em>Response code: </em><code class="language-json">401 Unauthorized</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Authorization failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "carl@example.com",
+    "password": "1111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "mike@example.com",
+    "password": "2222"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "carl@example.com",
+    "player2": "",
+    "size": "4x3"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/join</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game succeeded"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/1/status</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "game_status": "1st player's move",
+    "field": [
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "carl@example.com",
+    "player2": "mike@example.com",
+    "size": "4x3"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">401 Unauthorized</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Authorization failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">403 Forbidden</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "You have no rights to make this move"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">400 Bad Request</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Incorrect or impossible move"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(2,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,2)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pa2VAZXhhbXBsZS5jb20ifQ.yw_YW7lY77UncwcPNOxego1l1TcP80o1gHhrdWeg0JU</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(2,2)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,3)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/1/status</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImNhcmxAZXhhbXBsZS5jb20ifQ.Zt8gtkUjEffgODauxx9gwQ1cnKueML-5ESBkJW2g5AY</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "game_status": "1st player won",
+    "field": [
+        ["X", "X", "X", " "],
+        ["O", "O", " ", " "],
+        [" ", " ", " ", " "]
+    ],
+    "player1": "carl@example.com",
+    "player2": "mike@example.com",
+    "size": "4x3"
+}</code></pre>
+</li>
+</ol>
+<p> <strong>Example 2:</strong></p>
+<ol>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Registration failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signup</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed Up"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "11111111"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">403 Forbidden</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Authorization failed"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /signin</code><br/>
+<em>Request body</em>:
+    <pre><code class="language-json">{
+    "email": "artem@hyperskill.org",
+    "password": "1234"
+}</code></pre>
+<p><em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em></p>
+<pre><code class="language-json">{
+    "status": "Signed In",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM"
+}</code></pre>
+</li>
+<li> Request: <code class="language-json">POST /game</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body: </em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "status": "New game started",
+    "player1": "",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/join</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Joining the game succeeded"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(1,2)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(2,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(2,2)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">POST /game/1/move</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{
+    "move": "(3,1)"
+}</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "status": "Move done"
+}</code></pre>
+</li>
+<li>Request: <code class="language-json">GET /game/1/status</code><br/>
+<em>Authorization header:</em>
+<pre><code class="language-no-highlight">Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFydGVtQGh5cGVyc2tpbGwub3JnIn0.EYNWizxGYKbvbF1ah4EC4TTnyqbquElEzpJqE5jdwrM</code></pre>
+<em>Request body</em>:
+
+    <pre><code class="language-json">{ }</code></pre>
+<em>Response code: </em><code class="language-json">200 OK</code><br/>
+<em>Response body:</em>
+<pre><code class="language-json">{
+    "game_id": 1,
+    "game_status": "1st player won",
+    "field": [
+        ["X", "O", " "],
+        ["X", "O", " "],
+        ["X", " ", " "]
+    ],
+    "player1": "artem@hyperskill.org",
+    "player2": "artem@hyperskill.org",
+    "size": "3x3"
+}</code></pre>
+</li>
+</ol>
+</div>

@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TicTacToeTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2023-09-30T13:02:36" hostname="WIN-PK97IO7J39D" time="0.417">
+  <properties/>
+  <testcase name="start" classname="TicTacToeTest" time="0.417">
+    <failure message="java.lang.AssertionError: Wrong answer in test #4&#10;&#10;Expected:&#10;Player1 wins!&#10;Found:&#10;|---|---|---|&#10;| X |   |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;&#10;Enter Player2's move as (x,y)&#10;&#10;Please find below the output of your program during this failed test.&#10;Note that the '&gt;' character indicates the beginning of the input line.&#10;&#10;---&#10;&#10;Enter the first player's name (Player1 by default)&#10;&gt; &#10;First player's name: Player1 &#10;Enter the second player's name (Player2 by default)&#10;&gt; &#10;Second player's name: Player2 &#10;Enter the field size (3x3 by default)&#10;&gt; &#10;Field size: 3x3&#10;|---|---|---|-y&#10;|   |   |   |&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;|&#10;x&#10;Enter Player1's move as (x,y)&#10;&gt; (2,1)&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;| X |   |   |&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;&#10;Enter Player2's move as (x,y)&#10;&gt; (2,1)&#10;Wrong move entered&#10;Enter Player2's move as (x,y)&#10;&gt; (,1)&#10;Wrong move entered&#10;Enter Player2's move as (x,y)&#10;&gt; sdfsdfs&#10;Wrong move entered&#10;Enter Player2's move as (x,y)&#10;&gt; (100,2)&#10;Wrong move entered&#10;Enter Player2's move as (x,y)&#10;&gt; (2,2)&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;&#10;Enter Player1's move as (x,y)&#10;&gt; (1,1)&#10;|---|---|---|&#10;| X |   |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;|   |   |   |&#10;|---|---|---|&#10;&#10;Enter Player2's move as (x,y)&#10;&gt; (3,2)&#10;|---|---|---|&#10;| X |   |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;|   | O |   |&#10;|---|---|---|&#10;&#10;Enter Player1's move as (x,y)&#10;&gt; (3,1)&#10;|---|---|---|&#10;| X |   |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;| X | O |   |&#10;|---|---|---|&#10;&#10;Enter Player2's move as (x,y)" type="java.lang.AssertionError">java.lang.AssertionError: Wrong answer in test #4
+
+Expected:
+Player1 wins!
+Found:
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+
+Please find below the output of your program during this failed test.
+Note that the '&gt;' character indicates the beginning of the input line.
+
+---
+
+Enter the first player's name (Player1 by default)
+&gt; 
+First player's name: Player1 
+Enter the second player's name (Player2 by default)
+&gt; 
+Second player's name: Player2 
+Enter the field size (3x3 by default)
+&gt; 
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+&gt; (2,1)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt; (2,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+&gt; (,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+&gt; sdfsdfs
+Wrong move entered
+Enter Player2's move as (x,y)
+&gt; (100,2)
+Wrong move entered
+Enter Player2's move as (x,y)
+&gt; (2,2)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+&gt; (1,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+&gt; (3,2)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+&gt; (3,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.hyperskill.hstest.stage.StageTest.start(StageTest.java:203)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:108)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:57)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:39)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:52)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at jdk.proxy1/jdk.proxy1.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:176)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:129)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:100)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:60)
+	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:113)
+	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:65)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+	at worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+</failure>
+  </testcase>
+  <system-out><![CDATA[?[1;31m
+Start test 1?[0m
+Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+Enter the second player's name (Player2 by default)
+> 
+Second player's name: Player2 
+Enter the field size (3x3 by default)
+> 
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+?[1;31m
+Start test 2?[0m
+Enter the first player's name (Player1 by default)
+> Artem
+First player's name: Artem 
+Enter the second player's name (Player2 by default)
+> Lollipop
+Second player's name: Lollipop 
+Enter the field size (3x3 by default)
+> 2x5
+Field size: 2x5
+|---|---|---|---|---|-y
+|   |   |   |   |   |
+|---|---|---|---|---|
+|   |   |   |   |   |
+|---|---|---|---|---|
+|
+x
+Enter Artem's move as (x,y)
+?[1;31m
+Start test 3?[0m
+Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+Enter the second player's name (Player2 by default)
+> Mary
+Second player's name: Mary 
+Enter the field size (3x3 by default)
+> 2x2
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+?[1;31m
+Start test 4?[0m
+Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+Enter the second player's name (Player2 by default)
+> 
+Second player's name: Player2 
+Enter the field size (3x3 by default)
+> 
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+> (2,1)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+> (2,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+> (,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+> sdfsdfs
+Wrong move entered
+Enter Player2's move as (x,y)
+> (100,2)
+Wrong move entered
+Enter Player2's move as (x,y)
+> (2,2)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+> (1,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+> (3,2)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+> (3,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

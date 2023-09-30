@@ -1,0 +1,473 @@
+type: edu
+files:
+  - name: src/resources/application.conf
+    visible: true
+    text: |-
+      ktor {
+          deployment {
+              port = 28852
+          }
+          application {
+              modules = [tictactoeonline.ApplicationKt.module]
+          }
+      }
+    learner_created: false
+  - name: src/tictactoeonline/Application.kt
+    visible: true
+    text: |-
+      package tictactoeonline
+      
+      fun main() {
+          println("Hello World")
+      }
+    learner_created: false
+  - name: test/TicTacToeOnlineTest.kt
+    visible: false
+    text: |-
+      import org.hyperskill.hstest.dynamic.DynamicTest
+      import org.hyperskill.hstest.exception.outcomes.WrongAnswer
+      import org.hyperskill.hstest.stage.StageTest
+      import org.hyperskill.hstest.testcase.CheckResult
+      import org.hyperskill.hstest.testing.TestedProgram
+      
+      class TicTacToeTest : StageTest<Any>() {
+          @DynamicTest
+          fun test1_1(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("First *player's *name: *Player1 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nFirst player's name: Player1\nFound:\n$output")
+      
+                  output = pr.execute("")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Second *player's *name: *Player2 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nSecond player's name: Player2\nFound:\n$output")
+      
+                  output = pr.execute("")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Field *size: *3x3 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nField size: 3x3\nFound:\n$output")
+      
+                  if( !cleanOutput.contains("""
+                  |---|---|---|-y
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |
+                  x
+              """.trimIndent()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|-y
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |
+                  x
+                  """.trimIndent()+"\nFound:\n$output")
+      
+                  return CheckResult.correct()
+      
+              } catch(e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+          }
+          @DynamicTest
+          fun test1_2(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("Artem")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("First *player's *name: *Artem *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nFirst player's name: Artem\nFound:\n$output")
+      
+                  output = pr.execute("Lollipop")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Second *player's *name: *Lollipop *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nSecond player's name: Lollipop\nFound:\n$output")
+      
+                  output = pr.execute("2x5")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Field *size: *2x5 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("Expected:\nField size: 2x5\nFound:\n$output")
+      
+                  if( !cleanOutput.contains("""
+                  |---|---|---|---|---|-y
+                  |   |   |   |   |   |
+                  |---|---|---|---|---|
+                  |   |   |   |   |   |
+                  |---|---|---|---|---|
+                  |
+                  x
+              """.trimIndent()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|---|---|-y
+                  |   |   |   |   |   |
+                  |---|---|---|---|---|
+                  |   |   |   |   |   |
+                  |---|---|---|---|---|
+                  |
+                  x
+                  """.trimIndent()+"\nFound:\n$output")
+      
+                  return CheckResult.correct()
+              } catch (e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+          }
+          @DynamicTest
+          fun test1_3(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("First *player's *name: *Player1 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("The default name for one of the players is wrong")
+      
+                  output = pr.execute("Mary")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Second *player's *name: *Mary *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("The program incorrectly set the name of one of the players")
+      
+                  output = pr.execute("2x2")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Field *size: *3x3 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
+                      throw WrongAnswer("The program has set the wrong size for the playing field!")
+      
+                  if( !cleanOutput.contains("""
+                  |---|---|---|-y
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  |
+                  x
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("The program incorrectly displayed an empty playing field before the game started")
+      
+                  return CheckResult.correct()
+              } catch (e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+      
+          }
+      
+          @DynamicTest
+          fun test2_1(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("")
+                  output = pr.execute("")
+                  output = pr.execute("")
+      
+                  output = pr.execute("(2,1)")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  output = pr.execute("(2,1)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Wrong move entered".lowercase()))
+                      throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
+      
+                  output = pr.execute("(,1)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Wrong move entered".lowercase()))
+                      throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
+      
+                  output = pr.execute("sdfsdfs")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Wrong move entered".lowercase()))
+                      throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
+      
+                  output = pr.execute("(100,2)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Wrong move entered".lowercase()))
+                      throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
+      
+                  output = pr.execute("(2,2)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  output = pr.execute("(1,1)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   |   |   |
+                  |---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  output = pr.execute("(3,2)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   | O |   |
+                  |---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  |   | O |   |
+                  |---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  output = pr.execute("(3,1)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|
+                  | X |   |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  | X | O |   |
+                  |---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  if( !cleanOutput.contains("Player1 wins!".lowercase()))
+                      throw WrongAnswer("Expected:\nPlayer1 wins!\nFound:\n$output")
+      
+                  return CheckResult.correct()
+              } catch (e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+          }
+          @DynamicTest
+          fun test2_2(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("Biba")
+                  output = pr.execute("Boba")
+      
+                  output = pr.execute("1x10")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Field size: 1x10".lowercase()))
+                      throw WrongAnswer("Expected:\nField size: 1x10\nFound:\n$output")
+      
+                  output = pr.execute("(1,1)")
+                  output = pr.execute("(1,10)")
+                  output = pr.execute("(1,2)")
+                  output = pr.execute("(1,9)")
+                  output = pr.execute("(1,4)")
+      
+                  output = pr.execute("(1,8)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|---|---|---|---|---|---|---|---|---|
+                  | X | X |   | X |   |   |   | O | O | O |
+                  |---|---|---|---|---|---|---|---|---|---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|---|---|---|---|---|---|---|---|---|
+                  | X | X |   | X |   |   |   | O | O | O |
+                  |---|---|---|---|---|---|---|---|---|---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  if( !cleanOutput.contains("Boba wins!".lowercase()))
+                      throw WrongAnswer("Expected:\nBoba wins!\nFound:\n$output")
+      
+                  return CheckResult.correct()
+              } catch (e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+      
+          }
+          @DynamicTest
+          fun test2_3(): CheckResult {
+              try {
+                  val pr = TestedProgram()
+      
+                  var output = pr.start()
+                  output = pr.execute("Max")
+                  output = pr.execute("Emily")
+      
+                  output = pr.execute("8x1")
+                  var cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("Field size: 8x1".lowercase()))
+                      throw WrongAnswer("Expected:\nField size: 8x1\nFound:\n$output")
+      
+                  output = pr.execute("(1,1)")
+                  output = pr.execute("(2,1)")
+                  output = pr.execute("(3,1)")
+                  output = pr.execute("(4,1)")
+                  output = pr.execute("(5,1)")
+                  output = pr.execute("(6,1)")
+                  output = pr.execute("(7,1)")
+      
+                  output = pr.execute("(8,1)")
+                  cleanOutput = output.lowercase().trim()
+                  if( !cleanOutput.contains("""
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+              """.trimIndent().lowercase()))
+                      throw WrongAnswer("Expected:\n"+"""
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  | X |
+                  |---|
+                  | O |
+                  |---|
+                  """.trimIndent() + "\nFound:\n$output")
+      
+                  if( !cleanOutput.contains("Draw!".lowercase()))
+                      throw WrongAnswer("Expected:\nDraw!\nFound:\n$output")
+      
+                  return CheckResult.correct()
+              } catch (e: Exception) {
+                  throw WrongAnswer(e.message)
+              }
+          }
+      }
+    learner_created: false
+  - name: build.gradle
+    visible: true
+    text: |-
+      buildscript {
+          repositories {
+              mavenCentral()
+          }
+          dependencies {
+              classpath "org.jetbrains.kotlin:kotlin-serialization:$hs.kotlin.version"
+          }
+      }
+      
+      apply plugin: 'java'
+      apply plugin: 'org.jetbrains.kotlin.jvm'
+      apply plugin: 'kotlinx-serialization'
+      version '1.0-SNAPSHOT'
+      
+      repositories {
+          mavenCentral()
+      }
+      sourceSets.main.resources.srcDirs = ["src/resources"]
+      
+      dependencies {
+          implementation "org.jetbrains.kotlin:kotlin-stdlib"
+          implementation "io.ktor:ktor-server-core:1.6.7"
+          implementation "io.ktor:ktor-server-netty:1.6.7"
+          implementation "ch.qos.logback:logback-classic:1.2.10"
+          implementation "io.ktor:ktor-serialization:1.6.7"
+          implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
+          testImplementation "io.ktor:ktor-server-test-host:1.6.7"
+      }
+    learner_created: false
+  - name: src/tictactoeonline/Messaging.kt
+    visible: true
+    learner_created: true
+feedback_link: https://hyperskill.org/learn/step/30563#comment
+status: Failed
+feedback:
+  message: "Wrong answer in test #1\n\nExpected:\nSecond player&#39;s name: Player2\n\
+    Found:\nSecond player&#39;s name: Player2\n\nPlease find below the output of your\
+    \ program during this failed test.\nNote that the &#39;&gt;&#39; character indicates\
+    \ the beginning of the input line.\n\n---\n\nEnter the first player&#39;s name\
+    \ (Player1 by default)\n&gt; \nFirst player&#39;s name: Player1 \nEnter the second\
+    \ player&#39;s name (Player2 by default)\n&gt; \nSecond player&#39;s name: Player2"
+  time: "Sat, 30 Sep 2023 06:03:00 UTC"
+record: -1

@@ -1,0 +1,146 @@
+[1;31m
+Start test 1[0m
+4Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+5Enter the second player's name (Player2 by default)
+> 
+ Second player's name: Player2 
+'Enter the field size (3x3 by default)
+> 
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+[1;31m
+Start test 2[0m
+4Enter the first player's name (Player1 by default)
+> Artem
+First player's name: Artem 
+5Enter the second player's name (Player2 by default)
+> Lollipop
+!Second player's name: Lollipop 
+'Enter the field size (3x3 by default)
+> 2x5
+Field size: 2x5
+|---|---|---|---|---|-y
+|   |   |   |   |   |
+|---|---|---|---|---|
+|   |   |   |   |   |
+|---|---|---|---|---|
+|
+x
+Enter Artem's move as (x,y)
+[1;31m
+Start test 3[0m
+4Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+5Enter the second player's name (Player2 by default)
+> Mary
+Second player's name: Mary 
+'Enter the field size (3x3 by default)
+> 2x2
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+[1;31m
+Start test 4[0m
+4Enter the first player's name (Player1 by default)
+> 
+First player's name: Player1 
+5Enter the second player's name (Player2 by default)
+> 
+ Second player's name: Player2 
+'Enter the field size (3x3 by default)
+> 
+Field size: 3x3
+|---|---|---|-y
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+|
+x
+Enter Player1's move as (x,y)
+> (2,1)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X |   |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+> (2,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+> (,1)
+Wrong move entered
+Enter Player2's move as (x,y)
+
+> sdfsdfs
+Wrong move entered
+Enter Player2's move as (x,y)
+
+> (100,2)
+Wrong move entered
+Enter Player2's move as (x,y)
+> (2,2)
+|---|---|---|
+|   |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+> (1,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   |   |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
+> (3,2)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+|   | O |   |
+|---|---|---|
+
+Enter Player1's move as (x,y)
+> (3,1)
+|---|---|---|
+| X |   |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+| X | O |   |
+|---|---|---|
+
+Enter Player2's move as (x,y)
