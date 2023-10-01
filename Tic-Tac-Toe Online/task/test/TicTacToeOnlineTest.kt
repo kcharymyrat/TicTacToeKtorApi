@@ -1,400 +1,615 @@
+import io.ktor.application.*
+import io.ktor.http.*
+import io.ktor.request.*
+import io.ktor.server.testing.*
+import kotlinx.serialization.Serializable
+import tictactoeonline.module
 import org.hyperskill.hstest.dynamic.DynamicTest
-import org.hyperskill.hstest.exception.outcomes.WrongAnswer
 import org.hyperskill.hstest.stage.StageTest
 import org.hyperskill.hstest.testcase.CheckResult
-import org.hyperskill.hstest.testing.TestedProgram
+import org.hyperskill.hstest.testing.expect.Expectation.expect
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.decodeFromString
+import java.util.regex.Pattern.compile;
+import org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
-class TicTacToeTest : StageTest<Any>() {
+
+class TicTacToeOnlineTest : StageTest<Any>() {
     @DynamicTest
-    fun test1_1(): CheckResult {
+    fun test1(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
         try {
-            val pr = TestedProgram()
-
-            var output = pr.start()
-            output = pr.execute("")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("First *player's *name: *Player1 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nFirst player's name: Player1\nFound:\n$output")
-
-            output = pr.execute("")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Second *player's *name: *Player2 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nSecond player's name: Player2\nFound:\n$output")
-
-            output = pr.execute("")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Field *size: *3x3 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nField size: 3x3\nFound:\n$output")
-
-            if( !cleanOutput.contains("""
-            |---|---|---|-y
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |
-            x
-        """.trimIndent()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|-y
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |
-            x
-            """.trimIndent()+"\nFound:\n$output")
-
-            return CheckResult.correct()
-
-        } catch(e: Exception) {
-            throw WrongAnswer(e.message)
-        }
-    }
-    @DynamicTest
-    fun test1_2(): CheckResult {
-        try {
-            val pr = TestedProgram()
-
-            var output = pr.start()
-            output = pr.execute("Artem")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("First *player's *name: *Artem *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nFirst player's name: Artem\nFound:\n$output")
-
-            output = pr.execute("Lollipop")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Second *player's *name: *Lollipop *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nSecond player's name: Lollipop\nFound:\n$output")
-
-            output = pr.execute("2x5")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Field *size: *2x5 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("Expected:\nField size: 2x5\nFound:\n$output")
-
-            if( !cleanOutput.contains("""
-            |---|---|---|---|---|-y
-            |   |   |   |   |   |
-            |---|---|---|---|---|
-            |   |   |   |   |   |
-            |---|---|---|---|---|
-            |
-            x
-        """.trimIndent()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|---|---|-y
-            |   |   |   |   |   |
-            |---|---|---|---|---|
-            |   |   |   |   |   |
-            |---|---|---|---|---|
-            |
-            x
-            """.trimIndent()+"\nFound:\n$output")
-
-            return CheckResult.correct()
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_status", compile("game not started"))
+                    )
+                }
+            }
         } catch (e: Exception) {
-            throw WrongAnswer(e.message)
+            result = CheckResult.wrong(e.message)
         }
-    }
-    @DynamicTest
-    fun test1_3(): CheckResult {
-        try {
-            val pr = TestedProgram()
-
-            var output = pr.start()
-            output = pr.execute("")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("First *player's *name: *Player1 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("The default name for one of the players is wrong")
-
-            output = pr.execute("Mary")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Second *player's *name: *Mary *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("The program incorrectly set the name of one of the players")
-
-            output = pr.execute("2x2")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Field *size: *3x3 *\\n".toRegex(setOf(RegexOption.IGNORE_CASE))))
-                throw WrongAnswer("The program has set the wrong size for the playing field!")
-
-            if( !cleanOutput.contains("""
-            |---|---|---|-y
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            |
-            x
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("The program incorrectly displayed an empty playing field before the game started")
-
-            return CheckResult.correct()
-        } catch (e: Exception) {
-            throw WrongAnswer(e.message)
-        }
-
+        return result
     }
 
     @DynamicTest
-    fun test2_1(): CheckResult {
+    fun test2(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
         try {
-            val pr = TestedProgram()
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("New game started"))
+                            .value("player1", compile("Player1"))
+                            .value("player2", compile("Player2"))
+                            .value("size", compile("3x3"))
+                    )
+                }
 
-            var output = pr.start()
-            output = pr.execute("")
-            output = pr.execute("")
-            output = pr.execute("")
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(
+                        """
+                    {
+                        "player1": "Mike",
+                        "player2": "Kirk",
+                        "size": "2x1"
+                    }
+                """.trimIndent()
+                    )
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("New game started"))
+                            .value("player1", compile("Mike"))
+                            .value("player2", compile("Kirk"))
+                            .value("size", compile("3x3"))
+                    )
+                }
 
-            output = pr.execute("(2,1)")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            output = pr.execute("(2,1)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Wrong move entered".lowercase()))
-                throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
-
-            output = pr.execute("(,1)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Wrong move entered".lowercase()))
-                throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
-
-            output = pr.execute("sdfsdfs")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Wrong move entered".lowercase()))
-                throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
-
-            output = pr.execute("(100,2)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Wrong move entered".lowercase()))
-                throw WrongAnswer("Expected:\nWrong move entered\nFound:\n$output")
-
-            output = pr.execute("(2,2)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            output = pr.execute("(1,1)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   |   |   |
-            |---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            output = pr.execute("(3,2)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   | O |   |
-            |---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            |   | O |   |
-            |---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            output = pr.execute("(3,1)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|
-            | X |   |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            | X | O |   |
-            |---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            if( !cleanOutput.contains("Player1 wins!".lowercase()))
-                throw WrongAnswer("Expected:\nPlayer1 wins!\nFound:\n$output")
-
-            return CheckResult.correct()
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(
+                        """
+                    {
+                        "player1": "Aug",
+                        "player2": "Lol",
+                        "size": "fdhdfydrsf"
+                    }
+                """.trimIndent()
+                    )
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("New game started"))
+                            .value("player1", compile("Aug"))
+                            .value("player2", compile("Lol"))
+                            .value("size", compile("3x3"))
+                    )
+                }
+            }
         } catch (e: Exception) {
-            throw WrongAnswer(e.message)
+            result = CheckResult.wrong(e.message)
         }
+        return result
     }
+
     @DynamicTest
-    fun test2_2(): CheckResult {
+    fun test3(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
         try {
-            val pr = TestedProgram()
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(
+                        """
+                    {
+                        "player1": "Armageddon",
+                        "player2": "Rachel",
+                        "size": "2x5"
+                    }
+                """.trimIndent()
+                    )
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("New game started"))
+                            .value("player1", compile("Armageddon"))
+                            .value("player2", compile("Rachel"))
+                            .value("size", compile("2x5"))
+                    )
+                }
 
-            var output = pr.start()
-            output = pr.execute("Biba")
-            output = pr.execute("Boba")
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Armageddon"))
+                            .value("player2", compile("Rachel"))
+                            .value("size", compile("2x5"))
+                            .value("game_status", compile("1st player's move"))
+                            .value(
+                                "field", isArray(
+                                    2,
+                                    isArray(5, isString(" "))
+                                )
+                            )
+                    )
+                }
 
-            output = pr.execute("1x10")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Field size: 1x10".lowercase()))
-                throw WrongAnswer("Expected:\nField size: 1x10\nFound:\n$output")
-
-            output = pr.execute("(1,1)")
-            output = pr.execute("(1,10)")
-            output = pr.execute("(1,2)")
-            output = pr.execute("(1,9)")
-            output = pr.execute("(1,4)")
-
-            output = pr.execute("(1,8)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|---|---|---|---|---|---|---|---|---|
-            | X | X |   | X |   |   |   | O | O | O |
-            |---|---|---|---|---|---|---|---|---|---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|---|---|---|---|---|---|---|---|---|
-            | X | X |   | X |   |   |   | O | O | O |
-            |---|---|---|---|---|---|---|---|---|---|
-            """.trimIndent() + "\nFound:\n$output")
-
-            if( !cleanOutput.contains("Boba wins!".lowercase()))
-                throw WrongAnswer("Expected:\nBoba wins!\nFound:\n$output")
-
-            return CheckResult.correct()
+            }
         } catch (e: Exception) {
-            throw WrongAnswer(e.message)
+            result = CheckResult.wrong(e.message)
         }
-
+        return result
     }
+
     @DynamicTest
-    fun test2_3(): CheckResult {
+    fun test4(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
         try {
-            val pr = TestedProgram()
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }
 
-            var output = pr.start()
-            output = pr.execute("Max")
-            output = pr.execute("Emily")
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(3,2)"
+                    }
+                """.trimIndent())
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Move done"))
+                    )
+                }
 
-            output = pr.execute("8x1")
-            var cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("Field size: 8x1".lowercase()))
-                throw WrongAnswer("Expected:\nField size: 8x1\nFound:\n$output")
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Player1"))
+                            .value("player2", compile("Player2"))
+                            .value("size", compile("3x3"))
+                            .value("game_status", compile("2nd player's move"))
+                            .value(
+                                "field",
+                                isArray(3)
+                                    .item(0, isArray(" ", " ", " "))
+                                    .item(1, isArray(" ", " ", " "))
+                                    .item(2, isArray(" ", "X", " "))
+                            )
+                    )
+                }
 
-            output = pr.execute("(1,1)")
-            output = pr.execute("(2,1)")
-            output = pr.execute("(3,1)")
-            output = pr.execute("(4,1)")
-            output = pr.execute("(5,1)")
-            output = pr.execute("(6,1)")
-            output = pr.execute("(7,1)")
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(3,3)"
+                    }
+                """.trimIndent())
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Move done"))
+                    )
+                }
 
-            output = pr.execute("(8,1)")
-            cleanOutput = output.lowercase().trim()
-            if( !cleanOutput.contains("""
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-        """.trimIndent().lowercase()))
-                throw WrongAnswer("Expected:\n"+"""
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            | X |
-            |---|
-            | O |
-            |---|
-            """.trimIndent() + "\nFound:\n$output")
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Player1"))
+                            .value("player2", compile("Player2"))
+                            .value("size", compile("3x3"))
+                            .value("game_status", compile("1st player's move"))
+                            .value(
+                                "field",
+                                isArray(3)
+                                    .item(0, isArray(" ", " ", " "))
+                                    .item(1, isArray(" ", " ", " "))
+                                    .item(2, isArray(" ", "X", "O"))
+                            )
+                    )
+                }
 
-            if( !cleanOutput.contains("Draw!".lowercase()))
-                throw WrongAnswer("Expected:\nDraw!\nFound:\n$output")
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(2,2)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(2,3)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,2)"
+                    }
+                """.trimIndent())
+                }
 
-            return CheckResult.correct()
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Player1"))
+                            .value("player2", compile("Player2"))
+                            .value("size", compile("3x3"))
+                            .value("game_status", compile("1st player won"))
+                            .value(
+                                "field",
+                                isArray(3)
+                                    .item(0, isArray(" ", "X", " "))
+                                    .item(1, isArray(" ", "X", "O"))
+                                    .item(2, isArray(" ", "X", "O"))
+                            )
+                    )
+                }
+
+            }
         } catch (e: Exception) {
-            throw WrongAnswer(e.message)
+            result = CheckResult.wrong(e.message)
         }
+        return result
+    }
+
+    @DynamicTest
+    fun test5(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
+        try {
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }
+
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(3,2)"
+                    }
+                """.trimIndent())
+                }
+
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(3,2)"
+                    }
+                """.trimIndent())
+                }.apply {
+                    if (response.status() != HttpStatusCode.BadRequest) {
+                        result =
+                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Incorrect or impossible move"))
+                    )
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(100,100)"
+                    }
+                """.trimIndent())
+                }.apply {
+                    if (response.status() != HttpStatusCode.BadRequest) {
+                        result =
+                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Incorrect or impossible move"))
+                    )
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "segfsfdgfdsg"
+                    }
+                """.trimIndent())
+                }.apply {
+                    if (response.status() != HttpStatusCode.BadRequest) {
+                        result =
+                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Incorrect or impossible move"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Player1"))
+                            .value("player2", compile("Player2"))
+                            .value("size", compile("3x3"))
+                            .value("game_status", compile("2nd player's move"))
+                            .value(
+                                "field",
+                                isArray(3)
+                                    .item(0, isArray(" ", " ", " "))
+                                    .item(1, isArray(" ", " ", " "))
+                                    .item(2, isArray(" ", "X", " "))
+                            )
+                    )
+                }
+
+            }
+        } catch (e: Exception) {
+            result = CheckResult.wrong(e.message)
+        }
+        return result
+    }
+
+    @DynamicTest
+    fun test6(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
+        try {
+            withTestApplication(Application::module) {
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(
+                        """
+                    {
+                        "player1": "Armageddon",
+                        "player2": "Rachel",
+                        "size": "1x10"
+                    }
+                """.trimIndent()
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,1)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,2)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,3)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,4)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,5)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,6)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,7)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,8)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,9)"
+                    }
+                """.trimIndent())
+                }
+                handleRequest(HttpMethod.Post, "/game/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("""
+                    {
+                        "move": "(1,10)"
+                    }
+                """.trimIndent())
+                }
+
+                handleRequest(HttpMethod.Get, "/game/status").apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("player1", compile("Armageddon"))
+                            .value("player2", compile("Rachel"))
+                            .value("size", compile("1x10"))
+                            .value("game_status", compile("draw"))
+                            .value(
+                                "field",
+                                isArray(1)
+                                    .item(0, isArray("X", "O", "X", "O", "X", "O", "X", "O", "X", "O"))
+                            )
+                    )
+                }
+
+            }
+        } catch (e: Exception) {
+            result = CheckResult.wrong(e.message)
+        }
+        return result
     }
 }

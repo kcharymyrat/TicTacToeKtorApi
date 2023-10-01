@@ -672,6 +672,20 @@ files:
           }
       }
     learner_created: false
+  - name: src/tictactoeonline/ConsoleGame.kt
+    visible: true
+    learner_created: true
+  - name: src/tictactoeonline/plugins/Routing.kt
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30564#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #1
+
+    Expected status: 200 OK
+    Found:404 Not Found
+    Route: /game/status
+  time: "Sun, 01 Oct 2023 01:28:45 UTC"
 record: -1

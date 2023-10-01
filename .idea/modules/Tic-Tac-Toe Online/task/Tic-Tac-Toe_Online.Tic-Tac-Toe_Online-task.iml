@@ -3,7 +3,6 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../../../Tic-Tac-Toe Online/task">
-      <sourceFolder url="file://$MODULE_DIR$/../../../../Tic-Tac-Toe Online/task" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../../../Tic-Tac-Toe Online/task/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/../../../../Tic-Tac-Toe Online/task/build" />
       <excludeFolder url="file://$MODULE_DIR$/../../../../Tic-Tac-Toe Online/task/out" />
