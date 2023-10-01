@@ -1,6 +1,10 @@
 package tictactoeonline.plugins
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.application.*
+import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.routing.*
@@ -9,6 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
 import tictactoeonline.*
+import java.util.*
 
 const val PLAYER1 = "Player1"
 const val PLAYER2 = "Player2"
@@ -65,8 +70,15 @@ enum class RespondsStatus(val status: String) {
 @Serializable
 data class PlayerMove(val move: String)
 
+@Serializable
+data class UserCredentials(val email: String, val password: String)
+
 // An empty Game was created
 val currentGame = Game(game_status = GameStatus.NOT_STARTED.status)
+
+
+// To store all successfully registered emails
+val registeredEmails = mutableMapOf<String, String>()
 
 
 
@@ -74,6 +86,70 @@ val currentGame = Game(game_status = GameStatus.NOT_STARTED.status)
 fun Application.configureRouting() {
 
     routing {
+
+        post("/signup") {
+            println()
+            println("post(\"/signup\")")
+
+            val receivedText = call.receiveText()
+            println("receivedText = $receivedText")
+
+            try {
+                val user = Json.decodeFromString<UserCredentials>(receivedText)
+                print("user = $user")
+                if (user.email.isBlank() || user.password.isBlank()) throw Exception("Blank email or password")
+                if (doesEmailExist(user.email)) throw Exception("Email already exists")
+
+                registeredEmails[user.email] = user.password
+
+                call.respondText(
+                    text = Json.encodeToString(mapOf("status" to "Signed Up")),
+                    contentType = ContentType.Application.Json,
+                    status = HttpStatusCode.OK
+                )
+            } catch (_: Exception) {
+                call.respondText(
+                    text = Json.encodeToString(mapOf("status" to "Registration failed")),
+                    contentType = ContentType.Application.Json,
+                    status = HttpStatusCode.Forbidden
+                )
+            }
+        }
+
+        post("/signin") {
+            println()
+            println("post(\"/signin\")")
+
+            val receivedText = call.receiveText()
+            println("receivedText = $receivedText")
+
+            try {
+                val user = Json.decodeFromString<UserCredentials>(receivedText)
+                println("user =$user")
+                if (!doesEmailExist(user.email)) throw Exception("No such user exists")
+                if (registeredEmails[user.email] != user.password) throw Exception("No such user exists")
+
+                val token = JWT.create()
+                    .withClaim("email", user.email)
+                    .sign(Algorithm.HMAC256(secret))
+
+                call.respondText(
+                    text = Json.encodeToString(mapOf("status" to "Signed In", "token" to token)),
+                    contentType = ContentType.Application.Json,
+                    status = HttpStatusCode.OK
+                )
+
+                println("token = $token")
+            } catch (_:Exception) {
+                call.respondText(
+                    text = Json.encodeToString(mapOf("status" to "Authorization failed")),
+                    contentType = ContentType.Application.Json,
+                    status = HttpStatusCode.Forbidden
+                )
+            }
+        }
+
+
         post("/game") {
             println()
             println("post(\"/game\")")
@@ -179,6 +255,10 @@ fun Application.configureRouting() {
 
     }  // end_of_routing {}
 }  // end_Application.confugure()
+
+fun doesEmailExist(email: String): Boolean {
+    return registeredEmails.contains(email)
+}
 
 
 

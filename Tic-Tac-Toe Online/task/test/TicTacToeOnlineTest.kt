@@ -62,6 +62,7 @@ class TicTacToeOnlineTest : StageTest<Any>() {
                 }
 
                 handleRequest(HttpMethod.Post, "/signin") {
+                    println("in handleRequest(HttpMethod.Post, \"/signin\")")
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                     setBody(""" { "email":"mike@hyperskill.org", "password":"1122"} """)
                 }.apply {

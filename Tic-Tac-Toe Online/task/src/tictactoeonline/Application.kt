@@ -9,9 +9,7 @@ import io.ktor.http.*
 import io.ktor.response.*
 import tictactoeonline.plugins.*
 
-const val secret = "secret"
-const val issuer = "http://localhost:8080/"
-const val audience = "http://localhost:8080/page"
+const val secret = "ut920BwH09AOEDx5"
 const val myRealm = "Access to TicTacToe Game"
 
 fun main(args: Array<String>) {
@@ -26,8 +24,6 @@ fun Application.module() {
             verifier(
                 JWT
                     .require(Algorithm.HMAC256(secret))
-                    .withAudience(audience)
-                    .withIssuer(issuer)
                     .build()
             )
 
@@ -40,7 +36,7 @@ fun Application.module() {
             }
 
             challenge {defaultScheme, realm ->
-                call.respond(HttpStatusCode.Unauthorized, "Token is not valid or has expired")
+                call.respond(HttpStatusCode.Forbidden, "Token is not valid or has expired")
             }
         }
     }
