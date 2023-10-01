@@ -14,27 +14,72 @@ import java.util.regex.Pattern.compile;
 import org.hyperskill.hstest.testing.expect.json.JsonChecker.*;
 
 
+@Serializable
+data class SigninResponse(val status: String, val token: String)
+
 class TicTacToeOnlineTest : StageTest<Any>() {
     @DynamicTest
     fun test1(): CheckResult {
         var result: CheckResult = CheckResult.correct();
         try {
             withTestApplication(Application::module) {
-                handleRequest(HttpMethod.Get, "/game/status").apply {
-                    if (response.status() != HttpStatusCode.OK) {
+                handleRequest(HttpMethod.Post, "/signup") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/status")
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /signup")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        result = CheckResult.wrong("Empty response!\nRoute: /signup")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("game_status", compile("game not started"))
+                            .value("status", compile("Registration failed"))
                     )
                 }
+
+                handleRequest(HttpMethod.Post, "/signup") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(""" { "email":"", "password":""} """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /signup")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /signup")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Registration failed"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/signin") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(""" { "email":"mike@hyperskill.org", "password":"1122"} """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /signin")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /signin")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Authorization failed"))
+                    )
+                }
+
             }
         } catch (e: Exception) {
             result = CheckResult.wrong(e.message)
@@ -47,84 +92,152 @@ class TicTacToeOnlineTest : StageTest<Any>() {
         var result: CheckResult = CheckResult.correct();
         try {
             withTestApplication(Application::module) {
-                handleRequest(HttpMethod.Post, "/game") {
+                handleRequest(HttpMethod.Post, "/signup") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("{ }")
+                    setBody(""" { "email":"alex@hyperskill.org", "password":"hs2023"} """)
                 }.apply {
                     if (response.status() != HttpStatusCode.OK) {
-                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /signup")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        result = CheckResult.wrong("Empty response!\nRoute: /signup")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("New game started"))
-                            .value("player1", compile("Player1"))
-                            .value("player2", compile("Player2"))
-                            .value("size", compile("3x3"))
+                            .value("status", compile("Signed Up"))
                     )
                 }
 
-                handleRequest(HttpMethod.Post, "/game") {
+                handleRequest(HttpMethod.Post, "/signup") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody(
-                        """
-                    {
-                        "player1": "Mike",
-                        "player2": "Kirk",
-                        "size": "2x1"
-                    }
-                """.trimIndent()
-                    )
+                    setBody(""" { "email":"mira@hyperskill.org", "password":"112233"} """)
                 }.apply {
                     if (response.status() != HttpStatusCode.OK) {
-                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /signup")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        result = CheckResult.wrong("Empty response!\nRoute: /signup")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("New game started"))
-                            .value("player1", compile("Mike"))
-                            .value("player2", compile("Kirk"))
-                            .value("size", compile("3x3"))
+                            .value("status", compile("Signed Up"))
                     )
                 }
 
-                handleRequest(HttpMethod.Post, "/game") {
+                handleRequest(HttpMethod.Post, "/signup") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody(
-                        """
-                    {
-                        "player1": "Aug",
-                        "player2": "Lol",
-                        "size": "fdhdfydrsf"
-                    }
-                """.trimIndent()
-                    )
+                    setBody(""" { "email":"alex@hyperskill.org", "password":"1234"} """)
                 }.apply {
-                    if (response.status() != HttpStatusCode.OK) {
-                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /signup")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        result = CheckResult.wrong("Empty response!\nRoute: /signup")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("New game started"))
-                            .value("player1", compile("Aug"))
-                            .value("player2", compile("Lol"))
-                            .value("size", compile("3x3"))
+                            .value("status", compile("Registration failed"))
                     )
                 }
+
+                handleRequest(HttpMethod.Post, "/signin") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(""" { "email":"alex@hyperskill.org", "password":"1234"} """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /signin")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /signin")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Authorization failed"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/signin") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(""" { "email":"alex@hyperskill.org", "password":"hs2023"} """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /signin")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /signin")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Signed In"))
+                            .value("token", isString())
+                    )
+                    val resp: String = response.content!!
+                    val jsonResponse = Json.decodeFromString<SigninResponse>(resp)
+                    if (jsonResponse.token != "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8" &&
+                        jsonResponse.token != "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.VQIBO0jQ8qW-308raJtSrvqufTEPDWcJyQsfwjnjTLQ"
+                    ) {
+                        result = CheckResult.wrong(
+                            """
+                        Invalid login token!
+                        Expected eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8 or eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.VQIBO0jQ8qW-308raJtSrvqufTEPDWcJyQsfwjnjTLQ
+                        Found: ${jsonResponse.token}
+                        Route: /signin
+                    """.trimIndent()
+                        )
+                        return@apply
+                    }
+                }
+
+                handleRequest(HttpMethod.Post, "/signin") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody(""" { "email":"mira@hyperskill.org", "password":"112233"} """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /signin")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /signin")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Signed In"))
+                            .value("token", isString())
+                    )
+                    val resp: String = response.content!!
+                    val jsonResponse = Json.decodeFromString<SigninResponse>(resp)
+                    if (jsonResponse.token != "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA" &&
+                        jsonResponse.token != "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    ) {
+                        result = CheckResult.wrong(
+                            """
+                        Invalid login token!
+                        Expected eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA or eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
+                        Found: ${jsonResponse.token}
+                        Route: /signin
+                    """.trimIndent()
+                        )
+                        return@apply
+                    }
+                }
+
             }
         } catch (e: Exception) {
             result = CheckResult.wrong(e.message)
@@ -139,18 +252,11 @@ class TicTacToeOnlineTest : StageTest<Any>() {
             withTestApplication(Application::module) {
                 handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody(
-                        """
-                    {
-                        "player1": "Armageddon",
-                        "player2": "Rachel",
-                        "size": "2x5"
-                    }
-                """.trimIndent()
-                    )
+                    setBody("{ }")
                 }.apply {
-                    if (response.status() != HttpStatusCode.OK) {
-                        result = CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
+                    if (response.status() != HttpStatusCode.Unauthorized) {
+                        result =
+                            CheckResult.wrong("Expected status: 401 Unauthorized\nFound:${response.status()}\nRoute: /game")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
@@ -159,35 +265,83 @@ class TicTacToeOnlineTest : StageTest<Any>() {
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("New game started"))
-                            .value("player1", compile("Armageddon"))
-                            .value("player2", compile("Rachel"))
-                            .value("size", compile("2x5"))
+                            .value("status", compile("Authorization failed"))
                     )
                 }
 
-                handleRequest(HttpMethod.Get, "/game/status").apply {
-                    if (response.status() != HttpStatusCode.OK) {
+                handleRequest(HttpMethod.Get, "/games") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Unauthorized) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                            CheckResult.wrong("Expected status: 401 Unauthorized\nFound:${response.status()}\nRoute: /games")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        result = CheckResult.wrong("Empty response!\nRoute: /games")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("player1", compile("Armageddon"))
-                            .value("player2", compile("Rachel"))
-                            .value("size", compile("2x5"))
-                            .value("game_status", compile("1st player's move"))
-                            .value(
-                                "field", isArray(
-                                    2,
-                                    isArray(5, isString(" "))
-                                )
-                            )
+                            .value("status", compile("Authorization failed"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/join") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Unauthorized) {
+                        result =
+                            CheckResult.wrong("Expected status: 401 Unauthorized\nFound:${response.status()}\nRoute: /game/1/join")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/join")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Authorization failed"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Unauthorized) {
+                        result =
+                            CheckResult.wrong("Expected status: 401 Unauthorized\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Authorization failed"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    setBody("{ }")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Unauthorized) {
+                        result =
+                            CheckResult.wrong("Expected status: 401 Unauthorized\nFound:${response.status()}\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Authorization failed"))
                     )
                 }
 
@@ -205,154 +359,139 @@ class TicTacToeOnlineTest : StageTest<Any>() {
             withTestApplication(Application::module) {
                 handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("{ }")
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
+                    {
+                        "player1": "carl@example.com",
+                        "player2": "",
+                        "size": "4x3"
+                    }
+                """.trimIndent()
+                    )
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /game")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Creating a game failed"))
+                    )
                 }
 
-                handleRequest(HttpMethod.Post, "/game/move") {
+                handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
                     {
-                        "move": "(3,2)"
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "4x3"
                     }
-                """.trimIndent())
+                """.trimIndent()
+                    )
                 }.apply {
                     if (response.status() != HttpStatusCode.OK) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/move")
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("Move done"))
+                            .value("game_id", isInteger(1))
+                            .value("status", compile("New game started"))
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile(""))
+                            .value("size", compile("4x3"))
                     )
                 }
 
-                handleRequest(HttpMethod.Get, "/game/status").apply {
-                    if (response.status() != HttpStatusCode.OK) {
-                        result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
-                        return@apply
-                    }
-                    if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
-                        return@apply
-                    }
-                    expect(response.content).asJson().check(
-                        isObject()
-                            .value("player1", compile("Player1"))
-                            .value("player2", compile("Player2"))
-                            .value("size", compile("3x3"))
-                            .value("game_status", compile("2nd player's move"))
-                            .value(
-                                "field",
-                                isArray(3)
-                                    .item(0, isArray(" ", " ", " "))
-                                    .item(1, isArray(" ", " ", " "))
-                                    .item(2, isArray(" ", "X", " "))
-                            )
-                    )
-                }
-
-                handleRequest(HttpMethod.Post, "/game/move") {
+                handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(
+                        """
                     {
-                        "move": "(3,3)"
+                        "player1": "",
+                        "player2": "alex@hyperskill.org",
+                        "size": "3x6"
                     }
-                """.trimIndent())
+                """.trimIndent()
+                    )
                 }.apply {
                     if (response.status() != HttpStatusCode.OK) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/move")
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
+                        result = CheckResult.wrong("Empty response!\nRoute: /game")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("status", compile("Move done"))
+                            .value("game_id", isInteger(2))
+                            .value("status", compile("New game started"))
+                            .value("player1", compile(""))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("3x6"))
                     )
                 }
 
-                handleRequest(HttpMethod.Get, "/game/status").apply {
+                handleRequest(HttpMethod.Get, "/games") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
                     if (response.status() != HttpStatusCode.OK) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /games")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        result = CheckResult.wrong("Empty response!\nRoute: /games")
                         return@apply
                     }
                     expect(response.content).asJson().check(
-                        isObject()
-                            .value("player1", compile("Player1"))
-                            .value("player2", compile("Player2"))
-                            .value("size", compile("3x3"))
-                            .value("game_status", compile("1st player's move"))
-                            .value(
-                                "field",
-                                isArray(3)
-                                    .item(0, isArray(" ", " ", " "))
-                                    .item(1, isArray(" ", " ", " "))
-                                    .item(2, isArray(" ", "X", "O"))
+                        isArray(2)
+                            .item(
+                                0,
+                                isObject()
+                                    .value("game_id", isInteger(1))
+                                    .value("player1", compile("mira@hyperskill.org"))
+                                    .value("player2", compile(""))
+                                    .value("size", compile("4x3"))
                             )
-                    )
-                }
-
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(2,2)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(2,3)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,2)"
-                    }
-                """.trimIndent())
-                }
-
-                handleRequest(HttpMethod.Get, "/game/status").apply {
-                    if (response.status() != HttpStatusCode.OK) {
-                        result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
-                        return@apply
-                    }
-                    if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
-                        return@apply
-                    }
-                    expect(response.content).asJson().check(
-                        isObject()
-                            .value("player1", compile("Player1"))
-                            .value("player2", compile("Player2"))
-                            .value("size", compile("3x3"))
-                            .value("game_status", compile("1st player won"))
-                            .value(
-                                "field",
-                                isArray(3)
-                                    .item(0, isArray(" ", "X", " "))
-                                    .item(1, isArray(" ", "X", "O"))
-                                    .item(2, isArray(" ", "X", "O"))
+                            .item(
+                                1,
+                                isObject()
+                                    .value("game_id", isInteger(2))
+                                    .value("player1", compile(""))
+                                    .value("player2", compile("alex@hyperskill.org"))
+                                    .value("size", compile("3x6"))
                             )
                     )
                 }
@@ -369,112 +508,82 @@ class TicTacToeOnlineTest : StageTest<Any>() {
         var result: CheckResult = CheckResult.correct();
         try {
             withTestApplication(Application::module) {
+
                 handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("{ }")
-                }
-
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(3,2)"
-                    }
-                """.trimIndent())
-                }
-
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(3,2)"
-                    }
-                """.trimIndent())
-                }.apply {
-                    if (response.status() != HttpStatusCode.BadRequest) {
-                        result =
-                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
-                        return@apply
-                    }
-                    if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
-                        return@apply
-                    }
-                    expect(response.content).asJson().check(
-                        isObject()
-                            .value("status", compile("Incorrect or impossible move"))
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
                     )
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
+                    setBody(
+                        """
                     {
-                        "move": "(100,100)"
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "4x3"
                     }
-                """.trimIndent())
-                }.apply {
-                    if (response.status() != HttpStatusCode.BadRequest) {
-                        result =
-                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
-                        return@apply
-                    }
-                    if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
-                        return@apply
-                    }
-                    expect(response.content).asJson().check(
-                        isObject()
-                            .value("status", compile("Incorrect or impossible move"))
-                    )
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "segfsfdgfdsg"
-                    }
-                """.trimIndent())
-                }.apply {
-                    if (response.status() != HttpStatusCode.BadRequest) {
-                        result =
-                            CheckResult.wrong("Expected status: 400 Bad Request\nFound: ${response.status()}\nRoute: /game/move")
-                        return@apply
-                    }
-                    if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/move")
-                        return@apply
-                    }
-                    expect(response.content).asJson().check(
-                        isObject()
-                            .value("status", compile("Incorrect or impossible move"))
+                """.trimIndent()
                     )
                 }
 
-                handleRequest(HttpMethod.Get, "/game/status").apply {
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(" { } ")
+                }.apply {
                     if (response.status() != HttpStatusCode.OK) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/status")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("player1", compile("Player1"))
-                            .value("player2", compile("Player2"))
-                            .value("size", compile("3x3"))
-                            .value("game_status", compile("2nd player's move"))
+                            .value("game_id", isInteger(1))
+                            .value("game_status", compile("game not started"))
                             .value(
                                 "field",
-                                isArray(3)
+                                isArray(4)
                                     .item(0, isArray(" ", " ", " "))
                                     .item(1, isArray(" ", " ", " "))
-                                    .item(2, isArray(" ", "X", " "))
+                                    .item(2, isArray(" ", " ", " "))
+                                    .item(3, isArray(" ", " ", " "))
                             )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile(""))
+                            .value("size", compile("4x3"))
                     )
                 }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Failed to get game status"))
+                    )
+                }
+
 
             }
         } catch (e: Exception) {
@@ -488,121 +597,362 @@ class TicTacToeOnlineTest : StageTest<Any>() {
         var result: CheckResult = CheckResult.correct();
         try {
             withTestApplication(Application::module) {
+
                 handleRequest(HttpMethod.Post, "/game") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
                     setBody(
                         """
                     {
-                        "player1": "Armageddon",
-                        "player2": "Rachel",
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "4x3"
+                    }
+                """.trimIndent()
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/join") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/join")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/join")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Joining the game succeeded"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(1))
+                            .value("game_status", compile("1st player's move"))
+                            .value(
+                                "field",
+                                isArray(4)
+                                    .item(0, isArray(" ", " ", " "))
+                                    .item(1, isArray(" ", " ", " "))
+                                    .item(2, isArray(" ", " ", " "))
+                                    .item(3, isArray(" ", " ", " "))
+                            )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("4x3"))
+                    )
+                }
+
+
+            }
+        } catch (e: Exception) {
+            result = CheckResult.wrong(e.message)
+        }
+        return result
+    }
+
+    @DynamicTest
+    fun test7(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
+        try {
+            withTestApplication(Application::module) {
+
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
+                    {
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "4x3"
+                    }
+                """.trimIndent()
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
+                    {
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
                         "size": "1x10"
                     }
                 """.trimIndent()
                     )
                 }
 
-                handleRequest(HttpMethod.Post, "/game/move") {
+                handleRequest(HttpMethod.Post, "/game/1/join") {
                     addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,1)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,2)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,3)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,4)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,5)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,6)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,7)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,8)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,9)"
-                    }
-                """.trimIndent())
-                }
-                handleRequest(HttpMethod.Post, "/game/move") {
-                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                    setBody("""
-                    {
-                        "move": "(1,10)"
-                    }
-                """.trimIndent())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
                 }
 
-                handleRequest(HttpMethod.Get, "/game/status").apply {
-                    if (response.status() != HttpStatusCode.OK) {
+                handleRequest(HttpMethod.Post, "/game/2/join") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(2,3)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
                         result =
-                            CheckResult.wrong("Expected status: 200 OK\nFound: ${response.status()}\nRoute: /game/status")
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /game/1/move")
                         return@apply
                     }
                     if (response.content.isNullOrBlank()) {
-                        result = CheckResult.wrong("Empty response!\nRoute: /game/status")
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
                         return@apply
                     }
                     expect(response.content).asJson().check(
                         isObject()
-                            .value("player1", compile("Armageddon"))
-                            .value("player2", compile("Rachel"))
-                            .value("size", compile("1x10"))
-                            .value("game_status", compile("draw"))
+                            .value("status", compile("You have no rights to make this move"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(2,3)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Move done"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(1))
+                            .value("game_status", compile("2nd player's move"))
+                            .value(
+                                "field",
+                                isArray(4)
+                                    .item(0, isArray(" ", " ", " "))
+                                    .item(1, isArray(" ", " ", "X"))
+                                    .item(2, isArray(" ", " ", " "))
+                                    .item(3, isArray(" ", " ", " "))
+                            )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("4x3"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(2,3)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.BadRequest) {
+                        result =
+                            CheckResult.wrong("Expected status: 400 Bad Request\nFound:${response.status()}\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Incorrect or impossible move"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(1,2)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Move done"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(1))
+                            .value("game_status", compile("1st player's move"))
+                            .value(
+                                "field",
+                                isArray(4)
+                                    .item(0, isArray(" ", "O", " "))
+                                    .item(1, isArray(" ", " ", "X"))
+                                    .item(2, isArray(" ", " ", " "))
+                                    .item(3, isArray(" ", " ", " "))
+                            )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("4x3"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(1,4)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/2/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/2/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("Move done"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/2/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/2/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/2/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(2))
+                            .value("game_status", compile("2nd player's move"))
                             .value(
                                 "field",
                                 isArray(1)
-                                    .item(0, isArray("X", "O", "X", "O", "X", "O", "X", "O", "X", "O"))
+                                    .item(0, isArray(" ", " ", " ", "X", " ", " ", " ", " ", " ", " "))
                             )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("1x10"))
                     )
                 }
 
@@ -612,4 +962,251 @@ class TicTacToeOnlineTest : StageTest<Any>() {
         }
         return result
     }
+
+    @DynamicTest
+    fun test8(): CheckResult {
+        var result: CheckResult = CheckResult.correct();
+        try {
+            withTestApplication(Application::module) {
+
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
+                    {
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "4x3"
+                    }
+                """.trimIndent()
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(
+                        """
+                    {
+                        "player1": "mira@hyperskill.org",
+                        "player2": "",
+                        "size": "1x10"
+                    }
+                """.trimIndent()
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/join") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }
+
+                handleRequest(HttpMethod.Post, "/game/2/join") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }
+
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(1,1)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(1,2)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(2,1)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(2,2)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(3,1)" } """)
+                }
+
+                handleRequest(HttpMethod.Post, "/game/1/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(3,2)" } """)
+                }.apply {
+                    if (response.status() != HttpStatusCode.Forbidden) {
+                        result =
+                            CheckResult.wrong("Expected status: 403 Forbidden\nFound:${response.status()}\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/move")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("status", compile("You have no rights to make this move"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Get, "/game/1/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/1/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(1))
+                            .value("game_status", compile("1st player won"))
+                            .value(
+                                "field",
+                                isArray(4)
+                                    .item(0, isArray("X", "O", " "))
+                                    .item(1, isArray("X", "O", " "))
+                                    .item(2, isArray("X", " ", " "))
+                                    .item(3, isArray(" ", " ", " "))
+                            )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("4x3"))
+                    )
+                }
+
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(1,1)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(1,10)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(1,2)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(1,9)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q"
+                    )
+                    setBody(""" { "move": "(1,4)" } """)
+                }
+                handleRequest(HttpMethod.Post, "/game/2/move") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(""" { "move": "(1,8)" } """)
+                }
+
+                handleRequest(HttpMethod.Get, "/game/2/status") {
+                    addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+                    addHeader(
+                        HttpHeaders.Authorization,
+                        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8"
+                    )
+                    setBody(" { } ")
+                }.apply {
+                    if (response.status() != HttpStatusCode.OK) {
+                        result =
+                            CheckResult.wrong("Expected status: 200 OK\nFound:${response.status()}\nRoute: /game/2/status")
+                        return@apply
+                    }
+                    if (response.content.isNullOrBlank()) {
+                        result = CheckResult.wrong("Empty response!\nRoute: /game/2/status")
+                        return@apply
+                    }
+                    expect(response.content).asJson().check(
+                        isObject()
+                            .value("game_id", isInteger(2))
+                            .value("game_status", compile("2nd player won"))
+                            .value(
+                                "field",
+                                isArray(1)
+                                    .item(0, isArray("X", "X", " ", "X", " ", " ", " ", "O", "O", "O"))
+                            )
+                            .value("player1", compile("mira@hyperskill.org"))
+                            .value("player2", compile("alex@hyperskill.org"))
+                            .value("size", compile("1x10"))
+                    )
+                }
+
+            }
+        } catch (e: Exception) {
+            result = CheckResult.wrong(e.message)
+        }
+        return result
+    }
+
 }
