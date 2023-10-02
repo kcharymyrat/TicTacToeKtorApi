@@ -1384,7 +1384,13 @@ files:
           return playerName.ifEmpty { "Player${playerNum}" }
       }
     learner_created: true
-  - name: src/tictactoeonline/models/User.kt
+  - name: src/tictactoeonline/models/Users.kt
+    visible: true
+    learner_created: true
+  - name: src/tictactoeonline/models/Games.kt
+    visible: true
+    learner_created: true
+  - name: src/tictactoeonline/models/GameRooms.kt
     visible: true
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30566#comment

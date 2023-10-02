@@ -1,7 +1,5 @@
 package tictactoeonline.models
 
-import org.jetbrains.exposed.sql.*
-
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -16,53 +14,53 @@ object Users : IntIdTable() {
 }
 
 
-class User(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<User>(Users)
+class UserDAO(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserDAO>(Users)
 
     var email by Users.email
     var password by Users.password
 }
 
 
-class UserRepository {
+class UsersRepository {
     fun create(email: String, password: String) = transaction {
-        User.new {
+        UserDAO.new {
             this.email = email
             this.password = password
         }
     }
 
     fun update(id: Int, newEmail: String?, newPassword: String?) = transaction {
-        User.findById(id)?.apply {
+        UserDAO.findById(id)?.apply {
             if (newEmail != null) this.email = newEmail
             if (newPassword != null) this.password = newPassword
         }
     }
 
     fun delete(id: Int) = transaction {
-        User.findById(id)?.delete() != null
+        UserDAO.findById(id)?.delete() != null
     }
 
     fun find(id: Int) = transaction {
-        User.findById(id)
+        UserDAO.findById(id)
         // User.find { Users.id eq id }.singleOrNull() - same as above
     }
 
     fun all() = transaction {
-        User.all().toList()
+        UserDAO.all().toList()
     }
 
     fun updateByEmail(newEmail: String) = transaction {
-        User.find { Users.email eq newEmail }.singleOrNull()?.apply {
+        UserDAO.find { Users.email eq newEmail }.singleOrNull()?.apply {
             this.email  = newEmail
         }
     }
 
     fun deleteByEmail(email: String) = transaction {
-        User.find { Users.email eq email }.singleOrNull()?.delete() != null
+        UserDAO.find { Users.email eq email }.singleOrNull()?.delete() != null
     }
 
     fun findByEmail(email: String) = transaction {
-        User.find { Users.email eq email }.singleOrNull()
+        UserDAO.find { Users.email eq email }.singleOrNull()
     }
 }
