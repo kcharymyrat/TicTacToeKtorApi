@@ -1794,13 +1794,8 @@ files:
       }
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30565#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #1
-
-    Expected status: 403 Forbidden
-    Found:404 Not Found
-    Route: /signin
-  time: "Sun, 01 Oct 2023 06:26:14 UTC"
-record: -1
+  message: Congratulations!
+  time: "Sun, 01 Oct 2023 17:16:34 UTC"
+record: 3

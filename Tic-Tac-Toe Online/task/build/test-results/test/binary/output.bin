@@ -1,29 +1,20 @@
 [1;31m
 Start test 1[0m
-h[0;34m14:05:25.463 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m14:05:25.474 [main] INFO ktor.test - Application started in 0.072 seconds.
-	[0;34m
-[0m[0;34mpost("/signup")
-[0m[0;34mreceivedText = { }
-	[0;34m
-[0m[0;34mpost("/signup")
-:[0m[0;34mreceivedText =  { "email":"", "password":""} 
-b[0m[0;34muser = UserCredentials(email=, password=)in handleRequest(HttpMethod.Post, "/signin")
-	[0;34m
-[0m[0;34mpost("/signin")
-Q[0m[0;34mreceivedText =  { "email":"mike@hyperskill.org", "password":"1122"} 
-L[0m[0;34muser =UserCredentials(email=mike@hyperskill.org, password=1122)
 [1;31m
 Start test 2[0m
-h[0;34m14:05:26.442 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-T[0m[0;34m14:05:26.442 [main] INFO ktor.test - Application started in 0.0 seconds.
+h[0;34m10:34:47.302 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:34:47.312 [main] INFO ktor.test - Application started in 0.093 seconds.
 	[0;34m
 [0m[0;34mpost("/signup")
 S[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
-O[0m[0;34muser = UserCredentials(email=alex@hyperskill.org, password=hs2023)
+K[0;34muser = UserCredentials(email=alex@hyperskill.org, password=hs2023)
 [0m[0;34mpost("/signup")
 S[0m[0;34mreceivedText =  { "email":"mira@hyperskill.org", "password":"112233"} 
-K[0;34muser = UserCredentials(email=mira@hyperskill.org, password=112233)
+[1;31m
+Start test 3[0m
+ª[0;34muser = UserCredentials(email=mira@hyperskill.org, password=112233)10:34:48.225 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:34:48.226 [main] INFO ktor.test - Application started in 0.001 seconds.
+	[0;34m
 [0m[0;34mpost("/signup")
 Q[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"1234"} 
 M[0m[0;34muser = UserCredentials(email=alex@hyperskill.org, password=1234)
@@ -41,12 +32,26 @@
 N[0m[0;34muser =UserCredentials(email=mira@hyperskill.org, password=112233)
 [0m[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA
 [1;31m
-Start test 3[0m
-h[0;34m14:05:26.541 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m14:05:26.542 [main] INFO ktor.test - Application started in 0.002 seconds.
+Start test 4[0m
+h[0;34m10:34:48.312 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:34:48.314 [main] INFO ktor.test - Application started in 0.002 seconds.
 [0m[0;34m
 [0m[0;34mpost("/game")
-6[0m[0;34mcall.receiveText() = { }, isBlank = false
-V[0m[0;34mgameSetupInfo = GameSetupInfo(player1=Player1, player2=Player2, size=3x3)
-}[0m[0;34mcatch => respondForGameStep = {"status":"New game started","player1":"Player1","player2":"Player2","size":"3x3"}
-¬[0m[0;34mcatch => newGame = {"game_status":"1st player's move","field":[[" "," "," "],[" "," "," "],[" "," "," "]],"player1":"Player1","player2":"Player2","size":"3x3"}
+7[0m[0;34muserEmail from Token = mira@hyperskill.org
+"[0m[0;34mcall.receiveText() = {
+1[0m[0;34m    "player1": "mira@hyperskill.org",
+[0m[0;34m    "player2": "",
+[0m[0;34m    "size": "4x3",
+ [0m[0;34m    "private": false
+[0m[0;34m}, isBlank = false
+,[0m[0;34mcatch => Creating a game failed
+[0m[0;34m
+[0m[0;34mpost("/game")
+7[0m[0;34muserEmail from Token = alex@hyperskill.org
+"[0m[0;34mcall.receiveText() = {
+[0m[0;34m    "player1": "",
+1[0m[0;34m    "player2": "alex@hyperskill.org",
+[0m[0;34m    "size": "3x6",
+[0m[0;34m    "private": true
+[0m[0;34m}, isBlank = false
+,[0m[0;34mcatch => Creating a game failed

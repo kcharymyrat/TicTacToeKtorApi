@@ -646,6 +646,755 @@ files:
           }
       }
     learner_created: false
+  - name: src/tictactoeonline/plugins/Routing.kt
+    visible: true
+    text: |-
+      package tictactoeonline.plugins
+      
+      import com.auth0.jwt.JWT
+      import com.auth0.jwt.algorithms.Algorithm
+      import io.ktor.application.*
+      import io.ktor.auth.*
+      import io.ktor.auth.jwt.*
+      import io.ktor.http.*
+      import io.ktor.request.*
+      import io.ktor.routing.*
+      import io.ktor.response.*
+      import kotlinx.serialization.Serializable
+      import kotlinx.serialization.json.*
+      import kotlinx.serialization.*
+      import tictactoeonline.*
+      
+      
+      
+      @Serializable
+      data class Game(
+          var game_id: Int,
+          var game_status: String,
+          var field: MutableList<MutableList<String>>? = null,
+          var player1: String? = null,
+          var player2: String? = null,
+          var size: String? = null
+      )
+      
+      @Serializable
+      enum class GameStatus(val status: String) {
+          NOT_STARTED("game not started"),
+          FIRST_PLAYER_MOVE("1st player's move"),
+          SECOND_PLAYER_MOVE("2nd player's move"),
+          FIRST_PLAYER_WON("1st player won"),
+          SECOND_PLAYER_WON("2nd player won"),
+          DRAW("draw");
+      
+          override fun toString(): String {
+              return status
+          }
+      }
+      
+      @Serializable
+      data class GameSetupInfo(val player1: String, val player2: String, val size: String)
+      
+      @Serializable
+      data class RespondsForGameStep(
+          var game_id: Int,
+          var status: String,
+          var player1: String? = null,
+          var player2: String? = null,
+          var size: String? = null
+      )
+      
+      @Serializable
+      data class GameRegistrar(
+          var game_id: Int,
+          var player1: String,
+          var player2: String,
+          var size: String
+      )
+      
+      @Serializable
+      enum class RespondsStatus(val status: String) {
+          NEW_GAME_STARTER("New game started"),
+          FIRST_PLAYER_MOVE("1st player's move"),
+          SECOND_PLAYER_MOVE("2nd player's move"),
+          FIRST_PLAYER_WON("1st player won"),
+          SECOND_PLAYER_WON("2nd player won"),
+          DRAW("draw");
+      
+          override fun toString(): String {
+              return status
+          }
+      }
+      
+      @Serializable
+      data class PlayerMove(val move: String)
+      
+      @Serializable
+      data class UserCredentials(val email: String, val password: String)
+      
+      
+      // To store all successfully registered emails
+      @Serializable
+      val registeredEmails = mutableMapOf<String, String>()
+      
+      @Serializable
+      var allGames = mutableListOf<Game>()
+      
+      var GAMEID = 1
+      
+      fun Application.configureRouting() {
+      
+          routing {
+      
+              post("/signup") {
+                  println()
+                  println("post(\"/signup\")")
+      
+                  val receivedText = call.receiveText()
+                  println("receivedText = $receivedText")
+      
+                  try {
+                      val user = Json.decodeFromString<UserCredentials>(receivedText)
+                      print("user = $user")
+                      if (user.email.isBlank() || user.password.isBlank()) throw Exception("Blank email or password")
+                      if (doesEmailExist(user.email)) throw Exception("Email already exists")
+      
+                      registeredEmails[user.email] = user.password
+      
+                      call.respondText(
+                          text = Json.encodeToString(mapOf("status" to "Signed Up")),
+                          contentType = ContentType.Application.Json,
+                          status = HttpStatusCode.OK
+                      )
+                  } catch (_: Exception) {
+                      call.respondText(
+                          text = Json.encodeToString(mapOf("status" to "Registration failed")),
+                          contentType = ContentType.Application.Json,
+                          status = HttpStatusCode.Forbidden
+                      )
+                  }
+              }  // end of post("/signup")
+      
+              post("/signin") {
+                  println()
+                  println("post(\"/signin\")")
+      
+                  val receivedText = call.receiveText()
+                  println("receivedText = $receivedText")
+      
+                  try {
+                      val user = Json.decodeFromString<UserCredentials>(receivedText)
+                      println("user =$user")
+                      if (!doesEmailExist(user.email)) throw Exception("No such user exists")
+                      if (registeredEmails[user.email] != user.password) throw Exception("No such user exists")
+      
+                      val token = JWT.create()
+                          .withClaim("email", user.email)
+                          .sign(Algorithm.HMAC256(secret))
+      
+                      call.respondText(
+                          text = Json.encodeToString(mapOf("status" to "Signed In", "token" to token)),
+                          contentType = ContentType.Application.Json,
+                          status = HttpStatusCode.OK
+                      )
+      
+                      println("token = $token")
+                  } catch (_:Exception) {
+                      call.respondText(
+                          text = Json.encodeToString(mapOf("status" to "Authorization failed")),
+                          contentType = ContentType.Application.Json,
+                          status = HttpStatusCode.Forbidden
+                      )
+                  }
+              }  // end of post("/signin")
+      
+              authenticate("gameAuth") {
+                  post("/game") {
+                      println()
+                      println("post(\"/game\")")
+                      try {
+                          val principal = call.principal<JWTPrincipal>()
+                          val userEmail = principal!!.payload.getClaim("email").asString()
+                          println("userEmail from Token = $userEmail")
+      
+                          val receivedText = call.receiveText()
+                          println("call.receiveText() = $receivedText, isBlank = ${receivedText.isBlank()}")
+      
+                          val gameSetupInfo = Json.decodeFromString<GameSetupInfo>(receivedText)
+                          println("gameSetupInfo = $gameSetupInfo")
+      
+                          if (userEmail != gameSetupInfo.player1 && userEmail != gameSetupInfo.player2) throw Exception("Wrong Game setup")
+      
+      //                    if (userEmail == gameSetupInfo.player1) {
+      //                        if (gameSetupInfo.player2 == "") throw Exception("Identical emails")
+      //                    }
+      //                    if (userEmail == gameSetupInfo.player2) {
+      //                        if (gameSetupInfo.player1 == "") throw Exception("Identical emails")
+      //                    }
+      
+                          val respondAndGame = initialSetupOfRespondAndGame(gameSetupInfo)
+                          val respondForGameStep = respondAndGame.first
+                          val newGame = respondAndGame.second
+      
+                          println("try => respondForGameStep = ${Json.encodeToString(respondForGameStep)}")
+                          println("try => newGame = ${Json.encodeToString(newGame)}")
+      
+                          call.respondText(
+                              text = Json.encodeToString(respondForGameStep),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.OK
+                          )
+                      } catch (e: Exception) {
+                          println("catch => Creating a game failed")
+                          call.respondText(
+                              text = Json.encodeToString(mapOf("status" to "Creating a game failed")),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.Forbidden
+                          )
+                      }
+      
+                  }  // end of post("/game")
+      
+                  post("/game/{game_id}/join") {
+                      println()
+                      val id = call.parameters["game_id"]?.toInt()
+                      println("post(\"/game/$id/join\")")
+                      try {
+                          if (id == null) throw Exception("No such game_id was inserted")
+      
+                          val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
+                          println("game = ${Json.encodeToString(game)}")
+      
+                          if(!(game.player1 == "" || game.player2 == "")) throw Exception("Not your game to join")
+      
+                          val principal = call.principal<JWTPrincipal>()
+                          val email = principal!!.payload.getClaim("email").asString()
+                          println("email from token = $email")
+      
+                          if (game.player1 == "") game.player1 = email else game.player2 = email
+                          game.game_status = GameStatus.FIRST_PLAYER_MOVE.status
+      
+                          println("joined: game = ${Json.encodeToString(game)}")
+      
+                          call.respondText(
+                              text = Json.encodeToString(mapOf("status" to "Joining the game succeeded")),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.OK
+                          )
+                      } catch (e: Exception) {
+                          call.respondText(
+                              text = Json.encodeToString(mapOf("status" to "Joining the game failed")),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.Forbidden
+                          )
+                      }
+                  }  // post("/game/{game_id}/join")
+      
+                  post("/game/{game_id}/move") {
+                      println()
+                      val id = call.parameters["game_id"]?.toInt()
+                      println("post(\"/game/$id/move\")")
+                      try {
+                          val game = allGames.find { it.game_id == id } ?: throw Exception("You have no rights to make this move")
+                          val status = game.game_status
+                          val player1 = game.player1!!
+                          val player2 = game.player2!!
+                          println("game = $game")
+                          val receivedText = call.receiveText()
+                          println("call.receiveText() = $receivedText")
+      
+                          val principal = call.principal<JWTPrincipal>()
+                          val email = principal!!.payload.getClaim("email").asString()
+                          println("email = $email")
+      
+                          val firstStatus = GameStatus.FIRST_PLAYER_MOVE.status
+                          val secondStatus = GameStatus.SECOND_PLAYER_MOVE.status
+      
+                          if (status == firstStatus && email != player1) throw Exception("You have no rights to make this move")
+                          if (status == secondStatus && email != player2) throw Exception("You have no rights to make this move")
+      
+      
+                          val playerMove = Json.decodeFromString<PlayerMove>(receivedText)
+                          val moveCoords = playerMove.move
+                          val moveCoordsPair = getMoveCoords(moveCoords)
+      
+                          println("try => playerMove = ${Json.encodeToString(playerMove)}")
+      
+                          val fieldCoordsPair = getGameFieldCoords(game.size.toString())
+                          val x = fieldCoordsPair.first
+                          val y = fieldCoordsPair.second
+                          val field = game.field!!
+      
+      
+                          if (!validateMoveCoords(moveCoords, x, y, field)) throw Exception("Incorrect or impossible move")
+      
+                          val symbol = getPlayerSymbol(game.game_status)
+                          val nextPlayerGameStatus = changePlayerTurn(game.game_status)
+      
+      
+                          println("symbol = $symbol, nextPlayerGameStatus = $nextPlayerGameStatus")
+      
+                          if (game.game_status == GameStatus.FIRST_PLAYER_WON.status) throw Exception("You have no rights to make this move")
+                          if (game.game_status == GameStatus.SECOND_PLAYER_WON.status) throw Exception("You have no rights to make this move")
+      
+                          insertMove(moveCoordsPair, field, symbol)
+                          if (isWon(moveCoordsPair, field, symbol)) {
+                              if (symbol == "X") game.game_status = GameStatus.FIRST_PLAYER_WON.status
+                              else game.game_status = GameStatus.SECOND_PLAYER_WON.status
+                          } else if (isDraw(field)) {
+                              game.game_status = GameStatus.DRAW.status
+                          } else {
+                              game.game_status = nextPlayerGameStatus
+                          }
+      
+      
+                          call.respondText(
+                              text = Json.encodeToString(mapOf("status" to "Move done")),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.OK
+                          )
+                          println("move DONE")
+                      } catch (e: Exception) {
+                          println("move FAILED")
+                          if (e.message == "You have no rights to make this move") {
+                              call.respondText(
+                                  text = Json.encodeToString(mapOf("status" to "${e.message}")),
+                                  contentType = ContentType.Application.Json,
+                                  status = HttpStatusCode.Forbidden
+                              )
+                          } else {
+                              call.respondText(
+                                  text = Json.encodeToString(mapOf("status" to "${e.message}")),
+                                  contentType = ContentType.Application.Json,
+                                  status = HttpStatusCode.BadRequest
+                              )
+                          }
+                      }
+                  }  // end of post("/game/{game_id}/move")
+      
+                  get("/game/{game_id}/status") {
+                      println()
+                      val id = call.parameters["game_id"]?.toInt()
+                      println("get(\"/game/$id/status\")")
+                      try {
+                          if (id == null) throw Exception("No such game_id was inserted")
+      
+                          val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
+      
+                          println("Json.encodeToString(game) = ${Json.encodeToString(game)}")
+      
+                          val principal = call.principal<JWTPrincipal>()
+                          val email = principal!!.payload.getClaim("email").asString()
+                          println("email = $email")
+      
+                          if(!(email == game.player1 || email == game.player2)) throw Exception("Not your game to check")
+      
+                          call.respondText(
+                              text = Json.encodeToString(game),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.OK
+                          )
+                      } catch (e: Exception) {
+                          call.respondText(
+                              text = Json.encodeToString(mapOf("status" to "Failed to get game status")),
+                              contentType = ContentType.Application.Json,
+                              status = HttpStatusCode.Forbidden
+                          )
+                      }
+      
+      
+      
+                  } // end of get("/game/{game_id}/status")
+      
+                  get("/games") {
+                      println()
+                      println("get(\"/games\")")
+      
+                      println("allGames = ${Json.encodeToString(allGames)}")
+      
+                      val gamesToRegister = mutableListOf<GameRegistrar>()
+                      allGames.forEach { registerNewGames(gamesToRegister, it.game_id, it.player1!!, it.player2!!, it.size!!) }
+      
+                      println("gamesToRegister = $gamesToRegister")
+      
+                      call.respondText(
+                          text = Json.encodeToString(gamesToRegister),
+                          contentType = ContentType.Application.Json,
+                          status = HttpStatusCode.OK
+                      )
+                  }  // end of get("/games")
+      
+              } // end of authenticate("gameAuth")
+      
+          }  // end_of_routing {}
+      }  // end Application.configure()
+      
+      fun doesEmailExist(email: String): Boolean {
+          return registeredEmails.contains(email)
+      }
+      
+      
+      
+      fun getPlayerSymbol(player: String): String {
+          return if (player == GameStatus.FIRST_PLAYER_MOVE.status) "X" else "O"
+      }
+      
+      fun changePlayerTurn(player: String): String {
+          println("player = $player")
+          return if (player == GameStatus.FIRST_PLAYER_MOVE.status) GameStatus.SECOND_PLAYER_MOVE.status else GameStatus.FIRST_PLAYER_MOVE.status
+      }
+      
+      // ------Initial Setup Functions---mostly used in get("/post")--------//
+      fun initialSetupOfRespondAndGame(gameSetupInfo: GameSetupInfo): Pair<RespondsForGameStep, Game> {
+          val respondForGameStep = getRespondForGameStep(
+              status = RespondsStatus.NEW_GAME_STARTER.status,
+              player1 = gameSetupInfo.player1,
+              player2 = gameSetupInfo.player2,
+              size = gameSetupInfo.size
+          )
+      
+          val newGame = newGameInitialSetup(
+              GameStatus.NOT_STARTED.status,
+              respondForGameStep.player1.toString(),
+              respondForGameStep.player2.toString(),
+              respondForGameStep.size.toString()
+          )
+          allGames.add(newGame)
+      
+          GAMEID++
+      
+          return Pair(respondForGameStep, newGame)
+      }
+      
+      fun getRespondForGameStep(status: String, player1: String?, player2: String?, size: String?): RespondsForGameStep {
+          var validatedSize = size
+          if (size != null) {
+              val fieldCoordPair = getGameFieldCoords(size)
+              validatedSize = "${fieldCoordPair.first}x${fieldCoordPair.second}"
+          }
+          return RespondsForGameStep(
+              game_id = GAMEID,
+              status = status,
+              player1 = player1,
+              player2 = player2,
+              size = validatedSize
+          )
+      }
+      
+      fun registerNewGames(gamesToRegister: MutableList<GameRegistrar>, game_id: Int, player1: String, player2: String, size: String) {
+          gamesToRegister.add(GameRegistrar(game_id, player1, player2, size))
+      }
+      
+      fun newGameInitialSetup(gameStatus: String, player1: String, player2: String, size: String): Game {
+          // generate the fieldListOfList
+          val fieldCoordsPair = getGameFieldCoords(size)
+          val x = fieldCoordsPair.first
+          val y = fieldCoordsPair.second
+          val fieldListOfList = createListOfListField(x, y)
+      
+          return Game(
+              game_id = GAMEID,
+              game_status = gameStatus,
+              field = fieldListOfList,
+              player1 = player1,
+              player2 = player2,
+              size = size
+          )
+      }
+      
+      
+      
+      // ------ END Of Initial Setup Functions---mostly used in get("/post")--------//
+    learner_created: true
+  - name: src/tictactoeonline/ConsoleGame.kt
+    visible: true
+    text: |-
+      package tictactoeonline
+      
+      fun gameConsoleVersion() {
+          val bothPlayers = getBothPlayerNames()
+          val player1 = bothPlayers.first
+          val player2 = bothPlayers.second
+      
+          println("Enter the field size (3x3 by default)")
+          val inputSize = readln().trim()
+          val fieldCoords = getGameFieldCoords(inputSize)
+          val x = fieldCoords.first
+          val y = fieldCoords.second
+          println("Field size: ${x}x${y}")
+          val listOfListField = createListOfListField(x, y)
+      //    for (e in listOfListField) println(e)
+          prettyPrintField(listOfListField)
+      
+          var player = player1
+          while (true) {
+              println("Enter $player's move as (x,y)")
+              val symbol = if (player == player1) "X" else "O"
+              val moveString = readln().trim()
+              val isCorrectMove = validateMoveCoords(moveString, x, y, listOfListField)
+              if (!isCorrectMove) {
+                  println("Wrong move entered")
+                  continue
+              } else {
+                  val moveCoordsPair = getMoveCoords(moveString)
+                  insertMove(moveCoordsPair, listOfListField, symbol)
+                  prettyPrintField(listOfListField, false)
+                  if (isWon(moveCoordsPair, listOfListField, symbol)) {
+                      println("$player wins!")
+                      break
+                  }
+                  if (isDraw(listOfListField)) {
+                      println("Draw!")
+                      break
+                  }
+              }
+              println()
+              player = if (player == player1) player2 else player1
+          }
+      }
+      
+      fun isWon(moveCoords: Pair<Int, Int>, field: MutableList<MutableList<String>>, symbol: String): Boolean {
+      
+          val xIndex = moveCoords.first - 1
+          val yIndex = moveCoords.second - 1
+      
+          // 12 checks in total
+      
+          // 1. Up two times
+          if (xIndex - 2 >= 0) {
+              val cellOneAbove = field[xIndex - 1][yIndex]
+              val cellTwoAbove = field[xIndex - 2][yIndex]
+              if (cellOneAbove == symbol && cellTwoAbove == symbol) return true
+          }
+      
+          // 2. Up one time and Down one time
+          if (xIndex - 1 >= 0 && xIndex + 1 < field.size) {
+              val cellOneAbove = field[xIndex - 1][yIndex]
+              val cellOneBelow = field[xIndex + 1][yIndex]
+              if (cellOneAbove == symbol && cellOneBelow == symbol) return true
+          }
+      
+          // 3. Down two times
+          if (xIndex + 2 < field.size) {
+              val cellOneBelow = field[xIndex + 1][yIndex]
+              val cellTwoBelow = field[xIndex + 2][yIndex]
+              if (cellOneBelow == symbol && cellTwoBelow == symbol) return true
+          }
+      
+          // 4. Right two times
+          if (yIndex + 2 < field[0].size) {
+              val cellOneToRight = field[xIndex][yIndex + 1]
+              val cellTwoToRight = field[xIndex][yIndex + 2]
+              if (cellOneToRight == symbol && cellTwoToRight == symbol) return true
+          }
+      
+          // 5. Right one time and Left one time
+          if (yIndex - 1 >= 0 && yIndex + 1 < field[0].size) {
+              val cellOneToRight = field[xIndex][yIndex + 1]
+              val cellOneToLeft = field[xIndex][yIndex - 1]
+              if (cellOneToRight == symbol && cellOneToLeft == symbol) return true
+          }
+      
+          // 6. Left two times
+          if (yIndex - 2 >= 0) {
+              val cellOneToLeft = field[xIndex][yIndex - 1]
+              val cellTwoToLeft = field[xIndex][yIndex - 2]
+              if (cellOneToLeft == symbol && cellTwoToLeft == symbol) return true
+          }
+      
+          // 7. Diagonal Up Right two times
+          if (xIndex - 2 > 0 && yIndex + 2 < field[0].size) {
+              val cellOneDiagUpRight = field[xIndex - 1][yIndex + 1]
+              val cellTwoDiagUpRight = field[xIndex - 2][yIndex + 2]
+              if (cellOneDiagUpRight == symbol && cellTwoDiagUpRight == symbol) return true
+          }
+      
+          // 8. Diagonal Up Right one time and Diagonal Down Left one time
+          if (xIndex - 1 > 0 && yIndex + 1 < field[0].size && xIndex + 1 > field.size && yIndex - 1 > 0) {
+              val cellOneDiagUpRight = field[xIndex - 1][yIndex + 1]
+              val cellOneDiagDownRight = field[xIndex + 1][yIndex - 1]
+              if (cellOneDiagUpRight == symbol && cellOneDiagDownRight == symbol) return true
+          }
+      
+          // 9. Diagonal Down Right two times
+          if (xIndex + 2 < field.size && yIndex + 2 < field[0].size) {
+              val cellOneDiagDownRight = field[xIndex + 1][yIndex + 1]
+              val cellTwoDiagDownRight = field[xIndex + 2][yIndex + 2]
+              if (cellOneDiagDownRight == symbol && cellTwoDiagDownRight == symbol) return true
+          }
+      
+      
+          // 10. Diagonal Up Left two times
+          if (xIndex - 2 > 0 && yIndex - 2 > 0) {
+              val cellOneDiagUpLeft = field[xIndex - 1][yIndex - 1]
+              val cellTwoDiagUpLeft = field[xIndex - 2][yIndex - 2]
+              if (cellOneDiagUpLeft == symbol && cellTwoDiagUpLeft == symbol) return true
+          }
+      
+          // 11. Diagonal Up Left one time and Diagonal Down Right one time
+          if (xIndex - 1 > 0 && yIndex - 1 > 0 && xIndex + 1 < field.size && yIndex + 1 < field[0].size) {
+              val cellOneDiagUpLeft = field[xIndex - 1][yIndex - 1]
+              val cellOneDiagDownLeft = field[xIndex + 1][yIndex + 1]
+              if (cellOneDiagUpLeft == symbol && cellOneDiagDownLeft == symbol) return true
+          }
+      
+          // 12. Diagonal Down Left two times
+          if (xIndex + 2 < field.size && yIndex - 2 > 0) {
+              val cellOneDiagDownLeft = field[xIndex + 1][yIndex - 1]
+              val cellTwoDiagDownLeft = field[xIndex + 2][yIndex - 2]
+              if (cellOneDiagDownLeft == symbol && cellTwoDiagDownLeft == symbol) return true
+          }
+      
+          return false
+      }
+      
+      
+      fun isDraw(field: MutableList<MutableList<String>>): Boolean {
+          for (row in field){
+              for (cell in row) {
+                  if (cell.isBlank()) return false
+              }
+          }
+          return true
+      }
+      
+      fun insertMove(moveCoords: Pair<Int, Int>, field: MutableList<MutableList<String>>, symbol: String) {
+          val x = moveCoords.first
+          val y = moveCoords.second
+          field[x-1][y-1] = symbol
+      }
+      
+      fun getMoveCoords(moveCoords: String): Pair<Int, Int> {
+          val coords = moveCoords.trim().removeSurrounding("(", ")")
+              .split(",")
+              .map {it.trim().toInt()}
+      
+          return Pair(coords[0], coords[1])
+      }
+      
+      fun validateMoveCoords(moveCoords: String, x: Int, y: Int, field: MutableList<MutableList<String>>): Boolean {
+      
+          if(!syntaxCheckForCoords(moveCoords)) return false
+      
+          val moveCoordsPair = getMoveCoords(moveCoords)
+      
+          val xCoord = moveCoordsPair.first
+          val yCoord = moveCoordsPair.second
+      
+          if (!(xCoord in 1..x && yCoord in 1..y)) return false
+      
+          val cell = field[xCoord - 1][yCoord - 1]
+          return cell.isBlank()
+      }
+      
+      fun syntaxCheckForCoords(moveCoords: String): Boolean {
+          try {
+              val coords = moveCoords.trim().removeSurrounding("(", ")")
+                  .split(",")
+                  .map {it.trim().toInt()}
+              if (coords.size != 2) {
+                  return false
+              }
+              return true
+          } catch (e: Exception) {
+              return false
+          }
+      }
+      
+      
+      fun prettyPrintField(field: MutableList<MutableList<String>>, isEmpty: Boolean = true) {
+          val numOfRows = field.size
+          val numOfCols = field[0].size
+      
+          for (i in 0..numOfRows) {
+              if (i > 0) {
+                  for (j in 1..numOfCols) {
+                      val cell = field[i-1][j-1]
+                      if (cell.isNotEmpty() || cell.isNotBlank()) print("| $cell ")
+                      else print("|   ")
+                  }
+                  print("|")
+                  println()
+              }
+              for (j in 1..numOfCols) {
+                  print("|---")
+              }
+              if (i == 0 && isEmpty) print("|-y")
+              else print("|")
+              println()
+          }
+          if (isEmpty){
+              println("|")
+              println("x")
+          }
+      }
+      
+      fun createListOfListField(x: Int, y:Int): MutableList<MutableList<String>> {
+          val outerList = mutableListOf<MutableList<String>>()
+      
+          for (i in 1..x) {
+              val innerList = mutableListOf<String>()
+              for (j in 1..y) {
+                  innerList.add(" ")
+              }
+              outerList.add(innerList)
+          }
+          // println("outerList = $outerList")
+          return outerList
+      }
+      
+      fun getGameFieldCoords(inputSize: String): Pair<Int, Int> {
+          val fieldCoordinates = validateFieldSize(inputSize)
+          val x = fieldCoordinates.first
+          val y = fieldCoordinates.second
+          return Pair(x, y)
+      }
+      
+      fun validateFieldSize(inputSize: String): Pair<Int, Int> {
+          val pattern = Regex("\\d+x\\d+")
+          val coordPair = if (pattern.matches(inputSize)) {
+              val coordList = inputSize.split("x")
+              val x = coordList[0].toInt()
+              val y = coordList[1].toInt()
+              if (x < 1 || y < 1) {
+                  Pair(3, 3)
+              } else if (x >= 3 || y >= 3) {
+                  Pair(x, y)
+              } else {
+                  Pair(3, 3)
+              }
+          } else {
+              Pair(3, 3)
+          }
+          return coordPair
+      }
+      
+      fun getBothPlayerNames(): Pair<String, String> {
+          println("Enter the first player's name (Player1 by default)")
+          val player1 = readln().let { it.ifEmpty { "Player1" } }
+          println("First player's name: $player1 ")
+      
+          println("Enter the second player's name (Player2 by default)")
+          val player2 = readln().let { it.ifEmpty { "Player2" } }
+          println("Second player's name: $player2 ")
+      
+          return Pair(player1, player2)
+      }
+      
+      fun assignPlayerName(playerNum: Int, playerName: String): String {
+          return playerName.ifEmpty { "Player${playerNum}" }
+      }
+    learner_created: true
+  - name: src/tictactoeonline/models/User.kt
+    visible: true
+    learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30566#comment
-status: Unchecked
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #4
+
+    Expected status: 200 OK
+    Found:403 Forbidden
+    Route: /game
+  time: "Mon, 02 Oct 2023 05:34:48 UTC"
 record: -1

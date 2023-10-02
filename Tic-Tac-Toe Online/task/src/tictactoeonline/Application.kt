@@ -7,6 +7,8 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.*
 import tictactoeonline.plugins.*
 
 const val secret = "ut920BwH09AOEDx5"
@@ -36,11 +38,17 @@ fun Application.module() {
             }
 
             challenge {defaultScheme, realm ->
-                call.respond(HttpStatusCode.Forbidden, "Token is not valid or has expired")
+                call.respondText(
+                    text = Json.encodeToString(mapOf("status" to "Authorization failed")),
+                    contentType = ContentType.Application.Json,
+                    status = HttpStatusCode.Unauthorized
+                )
             }
         }
     }
 
+    GAMEID = 1
+    allGames = mutableListOf<Game>()
     configureRouting()
 }
 

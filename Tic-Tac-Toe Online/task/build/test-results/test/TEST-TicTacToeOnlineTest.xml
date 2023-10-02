@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="TicTacToeOnlineTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2023-10-01T09:05:25" hostname="WIN-PK97IO7J39D" time="1.438">
+<testsuite name="TicTacToeOnlineTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2023-10-02T05:34:46" hostname="WIN-PK97IO7J39D" time="1.452">
   <properties/>
-  <testcase name="start" classname="TicTacToeOnlineTest" time="1.438">
-    <failure message="java.lang.AssertionError: Wrong answer in test #3&#10;&#10;Expected status: 401 Unauthorized&#10;Found:404 Not Found&#10;Route: /game/1/move" type="java.lang.AssertionError">java.lang.AssertionError: Wrong answer in test #3
+  <testcase name="start" classname="TicTacToeOnlineTest" time="1.452">
+    <failure message="java.lang.AssertionError: Wrong answer in test #4&#10;&#10;Expected status: 200 OK&#10;Found:403 Forbidden&#10;Route: /game" type="java.lang.AssertionError">java.lang.AssertionError: Wrong answer in test #4
 
-Expected status: 401 Unauthorized
-Found:404 Not Found
-Route: /game/1/move
+Expected status: 200 OK
+Found:403 Forbidden
+Route: /game
 	at org.junit.Assert.fail(Assert.java:89)
 	at org.hyperskill.hstest.stage.StageTest.start(StageTest.java:203)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -56,30 +56,21 @@ Route: /game/1/move
   </testcase>
   <system-out><![CDATA[?[1;31m
 Start test 1?[0m
-?[0;34m14:05:25.463 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-?[0m?[0;34m14:05:25.474 [main] INFO ktor.test - Application started in 0.072 seconds.
-?[0;34m
-?[0m?[0;34mpost("/signup")
-?[0m?[0;34mreceivedText = { }
-?[0;34m
-?[0m?[0;34mpost("/signup")
-?[0m?[0;34mreceivedText =  { "email":"", "password":""} 
-?[0m?[0;34muser = UserCredentials(email=, password=)in handleRequest(HttpMethod.Post, "/signin")
-?[0;34m
-?[0m?[0;34mpost("/signin")
-?[0m?[0;34mreceivedText =  { "email":"mike@hyperskill.org", "password":"1122"} 
-?[0m?[0;34muser =UserCredentials(email=mike@hyperskill.org, password=1122)
 ?[1;31m
 Start test 2?[0m
-?[0;34m14:05:26.442 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-?[0m?[0;34m14:05:26.442 [main] INFO ktor.test - Application started in 0.0 seconds.
+?[0;34m10:34:47.302 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+?[0m?[0;34m10:34:47.312 [main] INFO ktor.test - Application started in 0.093 seconds.
 ?[0;34m
 ?[0m?[0;34mpost("/signup")
 ?[0m?[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
-?[0m?[0;34muser = UserCredentials(email=alex@hyperskill.org, password=hs2023)
+?[0;34muser = UserCredentials(email=alex@hyperskill.org, password=hs2023)
 ?[0m?[0;34mpost("/signup")
 ?[0m?[0;34mreceivedText =  { "email":"mira@hyperskill.org", "password":"112233"} 
-?[0;34muser = UserCredentials(email=mira@hyperskill.org, password=112233)
+?[1;31m
+Start test 3?[0m
+?[0;34muser = UserCredentials(email=mira@hyperskill.org, password=112233)10:34:48.225 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+?[0m?[0;34m10:34:48.226 [main] INFO ktor.test - Application started in 0.001 seconds.
+?[0;34m
 ?[0m?[0;34mpost("/signup")
 ?[0m?[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"1234"} 
 ?[0m?[0;34muser = UserCredentials(email=alex@hyperskill.org, password=1234)
@@ -97,15 +88,29 @@ Start test 2?[0m
 ?[0m?[0;34muser =UserCredentials(email=mira@hyperskill.org, password=112233)
 ?[0m?[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA
 ?[1;31m
-Start test 3?[0m
-?[0;34m14:05:26.541 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-?[0m?[0;34m14:05:26.542 [main] INFO ktor.test - Application started in 0.002 seconds.
+Start test 4?[0m
+?[0;34m10:34:48.312 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+?[0m?[0;34m10:34:48.314 [main] INFO ktor.test - Application started in 0.002 seconds.
 ?[0m?[0;34m
 ?[0m?[0;34mpost("/game")
-?[0m?[0;34mcall.receiveText() = { }, isBlank = false
-?[0m?[0;34mgameSetupInfo = GameSetupInfo(player1=Player1, player2=Player2, size=3x3)
-?[0m?[0;34mcatch => respondForGameStep = {"status":"New game started","player1":"Player1","player2":"Player2","size":"3x3"}
-?[0m?[0;34mcatch => newGame = {"game_status":"1st player's move","field":[[" "," "," "],[" "," "," "],[" "," "," "]],"player1":"Player1","player2":"Player2","size":"3x3"}
+?[0m?[0;34muserEmail from Token = mira@hyperskill.org
+?[0m?[0;34mcall.receiveText() = {
+?[0m?[0;34m    "player1": "mira@hyperskill.org",
+?[0m?[0;34m    "player2": "",
+?[0m?[0;34m    "size": "4x3",
+?[0m?[0;34m    "private": false
+?[0m?[0;34m}, isBlank = false
+?[0m?[0;34mcatch => Creating a game failed
+?[0m?[0;34m
+?[0m?[0;34mpost("/game")
+?[0m?[0;34muserEmail from Token = alex@hyperskill.org
+?[0m?[0;34mcall.receiveText() = {
+?[0m?[0;34m    "player1": "",
+?[0m?[0;34m    "player2": "alex@hyperskill.org",
+?[0m?[0;34m    "size": "3x6",
+?[0m?[0;34m    "private": true
+?[0m?[0;34m}, isBlank = false
+?[0m?[0;34mcatch => Creating a game failed
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
