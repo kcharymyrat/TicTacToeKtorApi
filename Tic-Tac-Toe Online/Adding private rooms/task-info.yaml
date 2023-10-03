@@ -1394,13 +1394,8 @@ files:
     visible: true
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30566#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #4
-
-    Expected status: 200 OK
-    Found:403 Forbidden
-    Route: /game
-  time: "Mon, 02 Oct 2023 14:22:30 UTC"
-record: -1
+  message: Congratulations!
+  time: "Tue, 03 Oct 2023 05:49:39 UTC"
+record: 4

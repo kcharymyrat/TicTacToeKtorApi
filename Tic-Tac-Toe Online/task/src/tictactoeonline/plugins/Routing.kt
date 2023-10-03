@@ -44,6 +44,18 @@ data class GameRegistrar(
     var private: Boolean,
 )
 
+@Serializable
+data class GameStatusRespond(
+    var game_id: Int,
+    var game_status: String,
+    var field: MutableList<MutableList<String>>,
+    var player1: String,
+    var player2: String,
+    var size: String,
+    var private: Boolean,
+    var token: String,
+)
+
 
 @Serializable
 data class Game(
@@ -240,8 +252,6 @@ fun Application.configureRouting() {
                     println("findByEmail(newGameSetup.player1) = ${usersRepository.findByEmail(newGameSetup.player1)}")
                     println("findByEmail(newGameSetup.player2) = ${usersRepository.findByEmail(newGameSetup.player2)}")
 
-
-
                     // Create GameDB
                     val player1 = if (newGameSetup.player1 == userEmail) usersRepository.findByEmail(newGameSetup.player1) else null
                     val player2 = if (newGameSetup.player2 == userEmail) usersRepository.findByEmail(newGameSetup.player2) else null
@@ -291,26 +301,35 @@ fun Application.configureRouting() {
 
             }  // end of post("/game")
 
-            post("/game/{game_id}/join") {
+            post("/game/{game_id}/join/{token?}") {
                 println()
-                val id = call.parameters["game_id"]?.toInt()
-                println("post(\"/game/$id/join\")")
+                val game_id = call.parameters["game_id"]?.toInt()
+                val token = call.parameters["token"]
+                println("post(\"/game/$game_id/join/$token\")")
+
                 try {
-                    if (id == null) throw Exception("No such game_id was inserted")
+                    if (game_id == null) throw Exception("No such game_id was inserted")
 
-                    val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
-                    println("game = ${Json.encodeToString(game)}")
+//                    val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
+                    val game = gameRepository.findGameByGameId(game_id) ?: throw Exception("No game with game_id = $game_id")
+                    println("Game: game_id=${game.game_id}, player1=${transaction { game.player1?.email }}, player2=${ transaction { game.player2?.email }}, token=${game.token}}")
 
-                    if(!(game.player1 == "" || game.player2 == "")) throw Exception("Not your game to join")
+//                    if (game.isPrivate && token == null) throw Exception("Game is private, no token provided!")
+                     if (game.token != token) throw Exception("Game is private, no token provided!")
+
+                    val player1 = transaction { game.player1?.email }
+                    val player2 = transaction { game.player2?.email }
+
+                    if(!(player1 == null || player2 == null)) throw Exception("Not your game to join")
 
                     val principal = call.principal<JWTPrincipal>()
                     val email = principal!!.payload.getClaim("email").asString()
                     println("email from token = $email")
 
-                    if (game.player1 == "") game.player1 = email else game.player2 = email
-                    game.game_status = GameStatus.FIRST_PLAYER_MOVE.status
+                    val userDAO = usersRepository.findByEmail(email) ?: throw Exception("No such user game to join")
 
-                    println("joined: game = ${Json.encodeToString(game)}")
+                    val playerAdded = gameRepository.addPlayer(game.id.value, userDAO) ?: throw Exception("Game was not added!")
+                    val statusUpdated = gameRepository.updateStatus(game.id.value, GameStatus.FIRST_PLAYER_MOVE.status) ?: throw Exception("Game status was not able to update 'status'")
 
                     call.respondText(
                         text = Json.encodeToString(mapOf("status" to "Joining the game succeeded")),
@@ -318,6 +337,7 @@ fun Application.configureRouting() {
                         status = HttpStatusCode.OK
                     )
                 } catch (e: Exception) {
+                    println("e= ${e.message}")
                     call.respondText(
                         text = Json.encodeToString(mapOf("status" to "Joining the game failed")),
                         contentType = ContentType.Application.Json,
@@ -410,23 +430,40 @@ fun Application.configureRouting() {
 
             get("/game/{game_id}/status") {
                 println()
-                val id = call.parameters["game_id"]?.toInt()
-                println("get(\"/game/$id/status\")")
+                val game_id = call.parameters["game_id"]?.toInt()
+                println("get(\"/game/$game_id/status\")")
                 try {
-                    if (id == null) throw Exception("No such game_id was inserted")
+                    if (game_id == null) throw Exception("No such game_id was inserted")
 
-                    val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
+                    // val game = allGames.find { it.game_id == game_id } ?: throw Exception("No game with game_id = $game_id")
 
-                    println("Json.encodeToString(game) = ${Json.encodeToString(game)}")
+                    val gameDAO = gameRepository.findGameByGameId(game_id) ?: throw Exception("No game with id=$game_id")
+                    val player1 = transaction { gameDAO.player1?.email }
+                    val player2 = transaction { gameDAO.player2?.email }
 
                     val principal = call.principal<JWTPrincipal>()
                     val email = principal!!.payload.getClaim("email").asString()
                     println("email = $email")
 
-                    if(!(email == game.player1 || email == game.player2)) throw Exception("Not your game to check")
+                    println("-------------------------------------------")
+                    println("Game: game_id=${gameDAO.game_id}, player1=${transaction { gameDAO.player1?.email }}, player2=${ transaction { gameDAO.player2?.email }}, token=${gameDAO.token}}")
+                    println("-------------------------------------------")
+
+                    if(!(email == player1 || email == player2)) throw Exception("Not your game to check")
+
+                    val gameStatusRespond = GameStatusRespond(
+                        game_id = gameDAO.game_id,
+                        game_status = gameDAO.gameStatus,
+                        field = Json.decodeFromString(gameDAO.field),
+                        player1 = player1 ?: "",
+                        player2 = player2 ?: "",
+                        size = gameDAO.size,
+                        private = gameDAO.isPrivate,
+                        token = gameDAO.token ?: ""
+                    )
 
                     call.respondText(
-                        text = Json.encodeToString(game),
+                        text = Json.encodeToString(gameStatusRespond),
                         contentType = ContentType.Application.Json,
                         status = HttpStatusCode.OK
                     )

@@ -2,17 +2,17 @@
 Start test 1[0m
 [1;31m
 Start test 2[0m
-h[0;34m08:49:21.119 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m08:49:21.135 [main] INFO ktor.test - Application started in 0.094 seconds.
-Å[0m[0;34m08:49:22.326 [main] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+h[0;34m10:49:27.941 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:49:27.952 [main] INFO ktor.test - Application started in 0.078 seconds.
+Å[0m[0;34m10:49:29.250 [main] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
 c[0m[0;34mSQL: SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
-∞[0m[0;34m08:49:22.367 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT PRIMARY KEY, EMAIL VARCHAR(255) NOT NULL, PASSWORD VARCHAR(64) NOT NULL)
+∞[0m[0;34m10:49:29.284 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT PRIMARY KEY, EMAIL VARCHAR(255) NOT NULL, PASSWORD VARCHAR(64) NOT NULL)
 í[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT PRIMARY KEY, EMAIL VARCHAR(255) NOT NULL, PASSWORD VARCHAR(64) NOT NULL)
-r[0m[0;34m08:49:22.374 [main] DEBUG Exposed - ALTER TABLE USERS ADD CONSTRAINT USERS_EMAIL_UNIQUE UNIQUE (EMAIL)
+r[0m[0;34m10:49:29.288 [main] DEBUG Exposed - ALTER TABLE USERS ADD CONSTRAINT USERS_EMAIL_UNIQUE UNIQUE (EMAIL)
 T[0m[0;34mSQL: ALTER TABLE USERS ADD CONSTRAINT USERS_EMAIL_UNIQUE UNIQUE (EMAIL)
-ò[0m[0;34m08:49:22.396 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMES (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, GAME_STATUS VARCHAR(20) NOT NULL, FIELD TEXT NOT NULL, PLAYER1 INT NULL, PLAYER2 INT NULL, "SIZE" VARCHAR(10) NOT NULL, PRIVATE BOOLEAN NOT NULL, TOKEN VARCHAR(32) NULL, CONSTRAINT FK_GAMES_PLAYER1__ID FOREIGN KEY (PLAYER1) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMES_PLAYER2__ID FOREIGN KEY (PLAYER2) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+ò[0m[0;34m10:49:29.298 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMES (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, GAME_STATUS VARCHAR(20) NOT NULL, FIELD TEXT NOT NULL, PLAYER1 INT NULL, PLAYER2 INT NULL, "SIZE" VARCHAR(10) NOT NULL, PRIVATE BOOLEAN NOT NULL, TOKEN VARCHAR(32) NULL, CONSTRAINT FK_GAMES_PLAYER1__ID FOREIGN KEY (PLAYER1) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMES_PLAYER2__ID FOREIGN KEY (PLAYER2) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
 ˙[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS GAMES (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, GAME_STATUS VARCHAR(20) NOT NULL, FIELD TEXT NOT NULL, PLAYER1 INT NULL, PLAYER2 INT NULL, "SIZE" VARCHAR(10) NOT NULL, PRIVATE BOOLEAN NOT NULL, TOKEN VARCHAR(32) NULL, CONSTRAINT FK_GAMES_PLAYER1__ID FOREIGN KEY (PLAYER1) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMES_PLAYER2__ID FOREIGN KEY (PLAYER2) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
-ê[0m[0;34m08:49:22.406 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMEROOMS (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, CREATOR INT NOT NULL, CONSTRAINT FK_GAMEROOMS_GAME_ID__ID FOREIGN KEY (GAME_ID) REFERENCES GAMES(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMEROOMS_CREATOR__ID FOREIGN KEY (CREATOR) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+ê[0m[0;34m10:49:29.304 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMEROOMS (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, CREATOR INT NOT NULL, CONSTRAINT FK_GAMEROOMS_GAME_ID__ID FOREIGN KEY (GAME_ID) REFERENCES GAMES(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMEROOMS_CREATOR__ID FOREIGN KEY (CREATOR) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
 Ú[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS GAMEROOMS (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, CREATOR INT NOT NULL, CONSTRAINT FK_GAMEROOMS_GAME_ID__ID FOREIGN KEY (GAME_ID) REFERENCES GAMES(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMEROOMS_CREATOR__ID FOREIGN KEY (CREATOR) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
 [0m[0;34m
 6[0m[0;34m----RELOAD NO. 1,  APP RELOADS NO. 1-----
@@ -20,25 +20,25 @@
 [0m[0;34mpost("/signup")
 O[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
 ´[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=hs2023)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=hs2023)
-ù[0m[0;34m08:49:22.805 [DefaultDispatcher-worker-1 @request#1] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', 'hs2023')
+ù[0m[0;34m10:49:29.632 [DefaultDispatcher-worker-1 @request#1] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', 'hs2023')
 	[0;34m
 [0m[0;34mpost("/signup")
 O[0m[0;34muserJson =  { "email":"mira@hyperskill.org", "password":"112233"} 
 ´[0m[0;34muserSerializable = UserDeserializer(email=mira@hyperskill.org, password=112233)deserializedUser = UserDeserializer(email=mira@hyperskill.org, password=112233)
-ù[0m[0;34m08:49:23.047 [DefaultDispatcher-worker-3 @request#5] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('mira@hyperskill.org', '112233')
+ù[0m[0;34m10:49:30.291 [DefaultDispatcher-worker-3 @request#5] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('mira@hyperskill.org', '112233')
 [1;31m
 Start test 3[0m
-h[0;34m08:49:23.147 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m08:49:23.148 [main] INFO ktor.test - Application started in 0.001 seconds.
+h[0;34m10:49:30.392 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+T[0m[0;34m10:49:30.392 [main] INFO ktor.test - Application started in 0.0 seconds.
 [0m[0;34m
 6[0m[0;34m----RELOAD NO. 2,  APP RELOADS NO. 1-----
 	[0;34m
 [0m[0;34mpost("/signup")
 M[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"1234"} 
 ß[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=1234)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=1234)
-¢[0m[0;34m08:49:23.268 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
-õ[0m[0;34m08:49:23.271 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
-ª[0m[0;34m08:49:23.274 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #0 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+¢[0m[0;34m10:49:30.594 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+õ[0m[0;34m10:49:30.598 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+ª[0m[0;34m10:49:30.600 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #0 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 ä[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
 é[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
@@ -70,7 +70,7 @@
 à[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
 ê[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
 J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
-d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:178)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
@@ -114,8 +114,8 @@
 k[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:12)
 f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:62)
 )[0m[0;34m	... 62 common frames omitted
-õ[0m[0;34m08:49:23.418 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
-ª[0m[0;34m08:49:23.419 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #1 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+õ[0m[0;34m10:49:30.711 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+ª[0m[0;34m10:49:30.712 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #1 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 ä[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
 é[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
@@ -147,7 +147,7 @@
 à[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
 ê[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
 J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
-d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:178)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
@@ -191,8 +191,8 @@
 k[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:12)
 f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:62)
 )[0m[0;34m	... 62 common frames omitted
-õ[0m[0;34m08:49:23.547 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
-ª[0m[0;34m08:49:23.550 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #2 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+õ[0m[0;34m10:49:31.014 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+ª[0m[0;34m10:49:31.014 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #2 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 ä[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
 é[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
 I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
@@ -224,7 +224,7 @@
 à[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
 ê[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
 J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
-d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:178)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
 X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
@@ -271,38 +271,38 @@
 [0m[0;34m
 [0m[0;34mpost("/signin")
 M[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"1234"} 
-â[0m[0;34m08:49:23.719 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:31.352 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ß[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=1234)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=1234)
-≥[0m[0;34m08:49:23.852 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+≥[0m[0;34m10:49:31.546 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
 1[0m[0;34muserDAO = alex@hyperskill.org hs2023
 [0m[0;34m
 [0m[0;34mpost("/signin")
 O[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
-â[0m[0;34m08:49:23.956 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:31.632 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ´[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=hs2023)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=hs2023)
-≥[0m[0;34m08:49:24.051 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+≥[0m[0;34m10:49:31.732 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
 1[0m[0;34muserDAO = alex@hyperskill.org hs2023
 ê[0m[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.VQIBO0jQ8qW-308raJtSrvqufTEPDWcJyQsfwjnjTLQ
 [0m[0;34m
 [0m[0;34mpost("/signin")
 O[0m[0;34muserJson =  { "email":"mira@hyperskill.org", "password":"112233"} 
-â[0m[0;34m08:49:24.188 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:31.843 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ´[0m[0;34muserSerializable = UserDeserializer(email=mira@hyperskill.org, password=112233)deserializedUser = UserDeserializer(email=mira@hyperskill.org, password=112233)
-≥[0m[0;34m08:49:24.301 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+≥[0m[0;34m10:49:31.933 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
 1[0m[0;34muserDAO = mira@hyperskill.org 112233
 ê[0m[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA
 [1;31m
 Start test 4[0m
-h[0;34m08:49:24.392 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m08:49:24.393 [main] INFO ktor.test - Application started in 0.001 seconds.
+h[0;34m10:49:32.019 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:49:32.020 [main] INFO ktor.test - Application started in 0.001 seconds.
 [0m[0;34m
 6[0m[0;34m----RELOAD NO. 3,  APP RELOADS NO. 1-----
 [0m[0;34m
 [0m[0;34mpost("/game")
-â[0m[0;34m08:49:24.593 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:32.228 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ì[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
 7[0m[0;34muserEmail from Token = mira@hyperskill.org
@@ -315,23 +315,23 @@
 t[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=mira@hyperskill.org, player2=, size=4x3, private=false)
 [0m[0;34mfalse
 [0m[0;34mAfter
-≥[0m[0;34m08:49:24.820 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-X[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@2d2c8bc1
-†[0m[0;34m08:49:24.924 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+≥[0m[0;34m10:49:32.335 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@42a61dd0
+†[0m[0;34m10:49:32.431 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
 5[0m[0;34mfindByEmail(newGameSetup.player2) = null
-≥[0m[0;34m08:49:25.034 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-£[0m[0;34m08:49:25.176 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
-à[0m[0;34m08:49:25.179 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
->[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@6e228fb8
-ú[0m[0;34m08:49:25.296 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+≥[0m[0;34m10:49:32.503 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+£[0m[0;34m10:49:32.612 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+à[0m[0;34m10:49:32.615 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
+<[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@c0a0af
+ú[0m[0;34m10:49:32.701 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
 ´[0m[0;34mtry => successGamePathRespond = {"game_id":1,"status":"New game started","player1":"mira@hyperskill.org","player2":"","size":"4x3","private":false,"token":""}
-„[0m[0;34m08:49:25.394 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
-ú[0m[0;34m08:49:25.395 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+„[0m[0;34m10:49:32.831 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:32.833 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
 ?[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null))]
 [0m[0;34mNOW what
 [0m[0;34m
 [0m[0;34mpost("/game")
-â[0m[0;34m08:49:25.526 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:32.952 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ì[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8
 7[0m[0;34muserEmail from Token = alex@hyperskill.org
@@ -344,44 +344,44 @@
 s[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=, player2=alex@hyperskill.org, size=3x6, private=true)
 [0m[0;34mfalse
 [0m[0;34mAfter
-†[0m[0;34m08:49:25.624 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+†[0m[0;34m10:49:33.034 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
 5[0m[0;34mfindByEmail(newGameSetup.player1) = null
-≥[0m[0;34m08:49:25.735 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
-X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@605fb2fc
-≥[0m[0;34m08:49:25.844 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
-»[0m[0;34m08:49:26.306 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 1, TRUE, '3x6', 'egUw6osyw4v3NEJHCCkf2e2gDpa6eyEh')
->[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@7f7b4c00
-ú[0m[0;34m08:49:26.478 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
- [0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"alex@hyperskill.org","size":"3x6","private":true,"token":"egUw6osyw4v3NEJHCCkf2e2gDpa6eyEh"}
-„[0m[0;34m08:49:26.730 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
-ú[0m[0;34m08:49:26.733 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
-ú[0m[0;34m08:49:26.736 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+≥[0m[0;34m10:49:33.152 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@468f29b2
+≥[0m[0;34m10:49:33.264 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+»[0m[0;34m10:49:33.350 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 1, TRUE, '3x6', 'WrMqbpPY6Vrl9FWtuXfHPph800coD3bj')
+=[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@b772278
+ú[0m[0;34m10:49:33.414 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+ [0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"alex@hyperskill.org","size":"3x6","private":true,"token":"WrMqbpPY6Vrl9FWtuXfHPph800coD3bj"}
+„[0m[0;34m10:49:33.600 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:33.601 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:33.602 [DefaultDispatcher-worker-1 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
 f[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org))]
 [0m[0;34mNOW what
 [1;31m
 Start test 5[0m
-h[0;34m08:49:26.859 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m08:49:26.860 [main] INFO ktor.test - Application started in 0.002 seconds.
+h[0;34m10:49:33.788 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m10:49:33.789 [main] INFO ktor.test - Application started in 0.002 seconds.
 [0m[0;34m
 6[0m[0;34m----RELOAD NO. 4,  APP RELOADS NO. 1-----
 [0m[0;34m
 [0m[0;34mget("/games")
 [0m[0;34mallGames = []
-„[0m[0;34m08:49:27.006 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
-ú[0m[0;34m08:49:27.008 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
-ú[0m[0;34m08:49:27.010 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+„[0m[0;34m10:49:33.920 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:33.926 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:33.927 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
 “[0m[0;34mregisteredGames = [GameRegistrar(game_id=1, player1=mira@hyperskill.org, player2=, size=4x3, private=false), GameRegistrar(game_id=2, player1=, player2=alex@hyperskill.org, size=3x6, private=true)]
 [1;31m
 Start test 6[0m
 [1;31m
 Start test 7[0m
-h[0;34m08:49:27.155 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-T[0m[0;34m08:49:27.156 [main] INFO ktor.test - Application started in 0.0 seconds.
+h[0;34m10:49:34.051 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+T[0m[0;34m10:49:34.052 [main] INFO ktor.test - Application started in 0.0 seconds.
 [0m[0;34m
 6[0m[0;34m----RELOAD NO. 5,  APP RELOADS NO. 1-----
 	[0;34m
 [0m[0;34mpost("/game")
-â[0m[0;34m08:49:27.361 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:34.162 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ì[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
 7[0m[0;34muserEmail from Token = mira@hyperskill.org
@@ -394,24 +394,24 @@
 t[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=mira@hyperskill.org, player2=, size=4x3, private=false)
 [0m[0;34mfalse
 [0m[0;34mAfter
-≥[0m[0;34m08:49:28.076 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-X[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@181bbb1f
-†[0m[0;34m08:49:28.185 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+≥[0m[0;34m10:49:34.255 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+W[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@a8d846f
+†[0m[0;34m10:49:34.391 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
 5[0m[0;34mfindByEmail(newGameSetup.player2) = null
-≥[0m[0;34m08:49:28.289 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-£[0m[0;34m08:49:28.384 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
-à[0m[0;34m08:49:28.386 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
->[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@2610698b
-ú[0m[0;34m08:49:28.491 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+≥[0m[0;34m10:49:34.477 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+£[0m[0;34m10:49:34.553 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+à[0m[0;34m10:49:34.556 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
+=[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@717cf9b
+ú[0m[0;34m10:49:34.718 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
 ´[0m[0;34mtry => successGamePathRespond = {"game_id":1,"status":"New game started","player1":"mira@hyperskill.org","player2":"","size":"4x3","private":false,"token":""}
-„[0m[0;34m08:49:28.819 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
-ú[0m[0;34m08:49:28.821 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
-ú[0m[0;34m08:49:28.822 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+„[0m[0;34m10:49:34.918 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:34.919 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:34.920 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
 ç[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org)), ((3, 1), (mira@hyperskill.org, null))]
 [0m[0;34mNOW what
 [0m[0;34m
 [0m[0;34mpost("/game")
-â[0m[0;34m08:49:29.625 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+â[0m[0;34m10:49:35.275 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
 A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
 ì[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
 7[0m[0;34muserEmail from Token = mira@hyperskill.org
@@ -424,23 +424,72 @@
 s[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=, player2=mira@hyperskill.org, size=3x6, private=true)
 [0m[0;34mfalse
 [0m[0;34mAfter
-†[0m[0;34m08:49:29.852 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+†[0m[0;34m10:49:35.405 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
 5[0m[0;34mfindByEmail(newGameSetup.player1) = null
-≥[0m[0;34m08:49:30.137 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@72f3c9f7
-≥[0m[0;34m08:49:30.270 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
-»[0m[0;34m08:49:30.360 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 2, TRUE, '3x6', 'JlIPglvvDuEmg6FAHfD1gpB2REPxTxMb')
->[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@464cf63f
-ú[0m[0;34m08:49:30.459 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
- [0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"mira@hyperskill.org","size":"3x6","private":true,"token":"JlIPglvvDuEmg6FAHfD1gpB2REPxTxMb"}
-„[0m[0;34m08:49:30.602 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
-ú[0m[0;34m08:49:30.605 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
-ú[0m[0;34m08:49:30.608 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+≥[0m[0;34m10:49:35.511 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@77ea0995
+≥[0m[0;34m10:49:35.605 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+»[0m[0;34m10:49:35.739 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 2, TRUE, '3x6', 'Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7')
+>[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@7ca9ff13
+ú[0m[0;34m10:49:35.878 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ [0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"mira@hyperskill.org","size":"3x6","private":true,"token":"Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7"}
+„[0m[0;34m10:49:35.999 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:36.002 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:36.004 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
 ¥[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org)), ((3, 1), (mira@hyperskill.org, null)), ((4, 2), (null, mira@hyperskill.org))]
 [0m[0;34mNOW what
 [0m[0;34m
-![0m[0;34mpost("/game/1/join")
+&[0m[0;34mpost("/game/1/join/null")
+„[0m[0;34m10:49:36.124 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:36.325 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+T[0m[0;34mGame: game_id=1, player1=mira@hyperskill.org, player2=null, token=null}
+ú[0m[0;34m10:49:36.474 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+3[0m[0;34memail from token = alex@hyperskill.org
+≥[0m[0;34m10:49:36.596 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+ˆ[0m[0;34m10:49:36.699 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES WHERE GAMES.ID = 3
+ú[0m[0;34m10:49:36.705 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+y[0m[0;34m10:49:36.719 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - UPDATE GAMES SET PLAYER2=1 WHERE ID = 3
+ˆ[0m[0;34m10:49:36.854 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES WHERE GAMES.ID = 3
+ê[0m[0;34m10:49:36.857 [DefaultDispatcher-worker-4 @request#45] DEBUG Exposed - UPDATE GAMES SET GAME_STATUS='1st player''s move' WHERE ID = 3
 [0m[0;34m
+B[0m[0;34mpost("/game/2/join/fr67sl4g5fltwwsgjl4ftyj9t20062ia")
+„[0m[0;34m10:49:36.975 [DefaultDispatcher-worker-1 @request#49] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:37.081 [DefaultDispatcher-worker-1 @request#49] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+p[0m[0;34mGame: game_id=2, player1=null, player2=mira@hyperskill.org, token=Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7}
+3[0m[0;34me= Game is private, no token provided!
+[0m[0;34m
+B[0m[0;34mpost("/game/2/join/Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7")
+„[0m[0;34m10:49:37.409 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:37.587 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+p[0m[0;34mGame: game_id=2, player1=null, player2=mira@hyperskill.org, token=Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7}
+ú[0m[0;34m10:49:37.726 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+3[0m[0;34memail from token = alex@hyperskill.org
+≥[0m[0;34m10:49:37.810 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+ˆ[0m[0;34m10:49:37.898 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES WHERE GAMES.ID = 4
+ú[0m[0;34m10:49:37.900 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:37.901 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+y[0m[0;34m10:49:37.904 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - UPDATE GAMES SET PLAYER1=1 WHERE ID = 4
+ˆ[0m[0;34m10:49:37.994 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES WHERE GAMES.ID = 4
+ê[0m[0;34m10:49:37.997 [DefaultDispatcher-worker-3 @request#53] DEBUG Exposed - UPDATE GAMES SET GAME_STATUS='1st player''s move' WHERE ID = 4
+	[0;34m
 "[0m[0;34mget("/game/1/status")
+„[0m[0;34m10:49:38.116 [DefaultDispatcher-worker-5 @request#57] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:38.197 [DefaultDispatcher-worker-5 @request#57] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:38.277 [DefaultDispatcher-worker-5 @request#57] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+([0m[0;34memail = alex@hyperskill.org
+8[0m[0;34m-------------------------------------------
+ú[0m[0;34m10:49:38.366 [DefaultDispatcher-worker-5 @request#57] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+ú[0m[0;34m10:49:38.468 [DefaultDispatcher-worker-5 @request#57] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+c[0m[0;34mGame: game_id=1, player1=mira@hyperskill.org, player2=alex@hyperskill.org, token=null}
+8[0m[0;34m-------------------------------------------
 [0m[0;34m
 "[0m[0;34mget("/game/2/status")
+„[0m[0;34m10:49:38.601 [DefaultDispatcher-worker-5 @request#61] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+ú[0m[0;34m10:49:38.696 [DefaultDispatcher-worker-5 @request#61] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+ú[0m[0;34m10:49:38.838 [DefaultDispatcher-worker-5 @request#61] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+([0m[0;34memail = alex@hyperskill.org
+8[0m[0;34m-------------------------------------------
+ú[0m[0;34m10:49:39.057 [DefaultDispatcher-worker-5 @request#61] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+ú[0m[0;34m10:49:39.152 [DefaultDispatcher-worker-5 @request#61] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+[0m[0;34mGame: game_id=2, player1=alex@hyperskill.org, player2=mira@hyperskill.org, token=Acfu7vTdb8MZkOItRNpTueNAgvo2KiU7}
+8[0m[0;34m-------------------------------------------

@@ -66,6 +66,15 @@ class GamesRepository {
             this.field = field
         }
     }
+
+    fun findGameByGameId(game_id: Int) = transaction {
+        // choose last one
+        var foundGame: GameDAO? = null
+        for (game in GameDAO.all()) {
+            if (game.game_id == game_id) foundGame = game
+        }
+        return@transaction foundGame
+    }
 }
 
 
