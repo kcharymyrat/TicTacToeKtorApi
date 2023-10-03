@@ -11,6 +11,7 @@ import tictactoeonline.plugins.GameStatus
 
 
 object Games : IntIdTable() {
+    val game_id = integer("game_id")
     val gameStatus: Column<String> = varchar("game_status", 20)
     val field: Column<String> = text("field")
     val player1 = reference("player1", Users).nullable()
@@ -23,6 +24,7 @@ object Games : IntIdTable() {
 class GameDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<GameDAO>(Games)
 
+    var game_id by Games.game_id
     var gameStatus by Games.gameStatus
     var field by Games.field
     var player1 by UserDAO optionalReferencedOn Games.player1
@@ -33,9 +35,10 @@ class GameDAO(id: EntityID<Int>) : IntEntity(id) {
 }
 
 class GamesRepository {
-    fun create(field: String, player1: UserDAO?, player2: UserDAO?, size: String, private: Boolean, token: String) = transaction {
+    fun create(game_id: Int, field: String, player1: UserDAO?, player2: UserDAO?, size: String, private: Boolean, token: String?) = transaction {
         GameDAO.new {
-            this.gameStatus = GameStatus.NOT_STARTED.status
+            this.game_id = game_id
+            this.gameStatus = GameStatus.NEW_GAME_STARTED.status
             this.field = field
             this.player1 = player1
             this.player2 = player2

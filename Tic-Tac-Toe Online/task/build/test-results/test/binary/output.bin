@@ -2,41 +2,309 @@
 Start test 1[0m
 [1;31m
 Start test 2[0m
-h[0;34m10:34:47.302 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m10:34:47.312 [main] INFO ktor.test - Application started in 0.093 seconds.
+h[0;34m08:49:21.119 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m08:49:21.135 [main] INFO ktor.test - Application started in 0.094 seconds.
+[0m[0;34m08:49:22.326 [main] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+c[0m[0;34mSQL: SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+°[0m[0;34m08:49:22.367 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT PRIMARY KEY, EMAIL VARCHAR(255) NOT NULL, PASSWORD VARCHAR(64) NOT NULL)
+’[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS USERS (ID INT AUTO_INCREMENT PRIMARY KEY, EMAIL VARCHAR(255) NOT NULL, PASSWORD VARCHAR(64) NOT NULL)
+r[0m[0;34m08:49:22.374 [main] DEBUG Exposed - ALTER TABLE USERS ADD CONSTRAINT USERS_EMAIL_UNIQUE UNIQUE (EMAIL)
+T[0m[0;34mSQL: ALTER TABLE USERS ADD CONSTRAINT USERS_EMAIL_UNIQUE UNIQUE (EMAIL)
+˜[0m[0;34m08:49:22.396 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMES (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, GAME_STATUS VARCHAR(20) NOT NULL, FIELD TEXT NOT NULL, PLAYER1 INT NULL, PLAYER2 INT NULL, "SIZE" VARCHAR(10) NOT NULL, PRIVATE BOOLEAN NOT NULL, TOKEN VARCHAR(32) NULL, CONSTRAINT FK_GAMES_PLAYER1__ID FOREIGN KEY (PLAYER1) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMES_PLAYER2__ID FOREIGN KEY (PLAYER2) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+ú[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS GAMES (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, GAME_STATUS VARCHAR(20) NOT NULL, FIELD TEXT NOT NULL, PLAYER1 INT NULL, PLAYER2 INT NULL, "SIZE" VARCHAR(10) NOT NULL, PRIVATE BOOLEAN NOT NULL, TOKEN VARCHAR(32) NULL, CONSTRAINT FK_GAMES_PLAYER1__ID FOREIGN KEY (PLAYER1) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMES_PLAYER2__ID FOREIGN KEY (PLAYER2) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[0m[0;34m08:49:22.406 [main] DEBUG Exposed - CREATE TABLE IF NOT EXISTS GAMEROOMS (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, CREATOR INT NOT NULL, CONSTRAINT FK_GAMEROOMS_GAME_ID__ID FOREIGN KEY (GAME_ID) REFERENCES GAMES(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMEROOMS_CREATOR__ID FOREIGN KEY (CREATOR) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+ò[0m[0;34mSQL: CREATE TABLE IF NOT EXISTS GAMEROOMS (ID INT AUTO_INCREMENT PRIMARY KEY, GAME_ID INT NOT NULL, CREATOR INT NOT NULL, CONSTRAINT FK_GAMEROOMS_GAME_ID__ID FOREIGN KEY (GAME_ID) REFERENCES GAMES(ID) ON DELETE RESTRICT ON UPDATE RESTRICT, CONSTRAINT FK_GAMEROOMS_CREATOR__ID FOREIGN KEY (CREATOR) REFERENCES USERS(ID) ON DELETE RESTRICT ON UPDATE RESTRICT)
+[0m[0;34m
+6[0m[0;34m----RELOAD NO. 1,  APP RELOADS NO. 1-----
 	[0;34m
 [0m[0;34mpost("/signup")
-S[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
-K[0;34muser = UserCredentials(email=alex@hyperskill.org, password=hs2023)
+O[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
+«[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=hs2023)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=hs2023)
+[0m[0;34m08:49:22.805 [DefaultDispatcher-worker-1 @request#1] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', 'hs2023')
+	[0;34m
 [0m[0;34mpost("/signup")
-S[0m[0;34mreceivedText =  { "email":"mira@hyperskill.org", "password":"112233"} 
+O[0m[0;34muserJson =  { "email":"mira@hyperskill.org", "password":"112233"} 
+«[0m[0;34muserSerializable = UserDeserializer(email=mira@hyperskill.org, password=112233)deserializedUser = UserDeserializer(email=mira@hyperskill.org, password=112233)
+[0m[0;34m08:49:23.047 [DefaultDispatcher-worker-3 @request#5] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('mira@hyperskill.org', '112233')
 [1;31m
 Start test 3[0m
-ª[0;34muser = UserCredentials(email=mira@hyperskill.org, password=112233)10:34:48.225 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m10:34:48.226 [main] INFO ktor.test - Application started in 0.001 seconds.
+h[0;34m08:49:23.147 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m08:49:23.148 [main] INFO ktor.test - Application started in 0.001 seconds.
+[0m[0;34m
+6[0m[0;34m----RELOAD NO. 2,  APP RELOADS NO. 1-----
 	[0;34m
 [0m[0;34mpost("/signup")
-Q[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"1234"} 
-M[0m[0;34muser = UserCredentials(email=alex@hyperskill.org, password=1234)
-[0m[0;34mpost("/signin")
-Q[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"1234"} 
-L[0m[0;34muser =UserCredentials(email=alex@hyperskill.org, password=1234)
+M[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"1234"} 
+§[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=1234)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=1234)
+¢[0m[0;34m08:49:23.268 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+›[0m[0;34m08:49:23.271 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+»[0m[0;34m08:49:23.274 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #0 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+Š[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
+Ž[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:64)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:141)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:127)
+W[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.execute(Statement.kt:28)
+P[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.executeBatch(Queries.kt:177)
+O[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:106)
+N[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:92)
+V[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert$default(Queries.kt:87)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:184)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:183)
+‡[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptorKt.executeAsPartOfEntityLifecycle(EntityLifecycleInterceptor.kt:18)
+b[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flushInserts$exposed_dao(EntityCache.kt:183)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:138)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:107)
+V[0m[0;34m	at org.jetbrains.exposed.dao.EntityCacheKt.flushCache(EntityCache.kt:243)
+s[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptor.beforeCommit(EntityLifecycleInterceptor.kt:74)
+O[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.commit(Transaction.kt:69)
+–[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:216)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.access$inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:1)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$inTopLevelTransaction$1.invoke(ThreadLocalTransactionManager.kt:241)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+’[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction(ThreadLocalTransactionManager.kt:240)
+‘[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$transaction$1.invoke(ThreadLocalTransactionManager.kt:190)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:160)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
+[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
+J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+E[0m[0;34m	at io.ktor.routing.Routing.executeResult(Routing.kt:155)
+B[0m[0;34m	at io.ktor.routing.Routing.interceptor(Routing.kt:39)
+W[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invokeSuspend(Routing.kt:107)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+z[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invokeSuspend(TestApplicationEngine.kt:296)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+i[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invokeSuspend(TestApplicationEngine.kt:50)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+„[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$handleRequest$pipelineJob$1.invokeSuspend(TestApplicationEngine.kt:295)
+f[0m[0;34m	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+L[0m[0;34m	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+Z[0m[0;34m	at kotlinx.coroutines.internal.LimitedDispatcher.run(LimitedDispatcher.kt:42)
+G[0m[0;34m	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:95)
+e[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:570)
+n[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:750)
+l[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:677)
+f[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:664)
+ã[0m[0;34mCaused by: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+_[0m[0;34m	at org.h2.jdbc.JdbcPreparedStatement.executeBatch(JdbcPreparedStatement.java:1269)
+[0m[0;34m	at org.jetbrains.exposed.sql.statements.jdbc.JdbcPreparedStatementImpl.executeBatch(JdbcPreparedStatementImpl.kt:48)
+o[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.execInsertFunction(InsertStatement.kt:123)
+l[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:131)
+k[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:12)
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:62)
+)[0m[0;34m	... 62 common frames omitted
+›[0m[0;34m08:49:23.418 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+»[0m[0;34m08:49:23.419 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #1 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+Š[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
+Ž[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:64)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:141)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:127)
+W[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.execute(Statement.kt:28)
+P[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.executeBatch(Queries.kt:177)
+O[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:106)
+N[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:92)
+V[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert$default(Queries.kt:87)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:184)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:183)
+‡[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptorKt.executeAsPartOfEntityLifecycle(EntityLifecycleInterceptor.kt:18)
+b[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flushInserts$exposed_dao(EntityCache.kt:183)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:138)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:107)
+V[0m[0;34m	at org.jetbrains.exposed.dao.EntityCacheKt.flushCache(EntityCache.kt:243)
+s[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptor.beforeCommit(EntityLifecycleInterceptor.kt:74)
+O[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.commit(Transaction.kt:69)
+–[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:216)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.access$inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:1)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$inTopLevelTransaction$1.invoke(ThreadLocalTransactionManager.kt:241)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+’[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction(ThreadLocalTransactionManager.kt:240)
+‘[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$transaction$1.invoke(ThreadLocalTransactionManager.kt:190)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:160)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
+[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
+J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+E[0m[0;34m	at io.ktor.routing.Routing.executeResult(Routing.kt:155)
+B[0m[0;34m	at io.ktor.routing.Routing.interceptor(Routing.kt:39)
+W[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invokeSuspend(Routing.kt:107)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+z[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invokeSuspend(TestApplicationEngine.kt:296)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+i[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invokeSuspend(TestApplicationEngine.kt:50)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+„[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$handleRequest$pipelineJob$1.invokeSuspend(TestApplicationEngine.kt:295)
+f[0m[0;34m	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+L[0m[0;34m	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+Z[0m[0;34m	at kotlinx.coroutines.internal.LimitedDispatcher.run(LimitedDispatcher.kt:42)
+G[0m[0;34m	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:95)
+e[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:570)
+n[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:750)
+l[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:677)
+f[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:664)
+ã[0m[0;34mCaused by: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+_[0m[0;34m	at org.h2.jdbc.JdbcPreparedStatement.executeBatch(JdbcPreparedStatement.java:1269)
+[0m[0;34m	at org.jetbrains.exposed.sql.statements.jdbc.JdbcPreparedStatementImpl.executeBatch(JdbcPreparedStatementImpl.kt:48)
+o[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.execInsertFunction(InsertStatement.kt:123)
+l[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:131)
+k[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:12)
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:62)
+)[0m[0;34m	... 62 common frames omitted
+›[0m[0;34m08:49:23.547 [DefaultDispatcher-worker-2 @request#9] DEBUG Exposed - INSERT INTO USERS (EMAIL, PASSWORD) VALUES ('alex@hyperskill.org', '1234')
+»[0m[0;34m08:49:23.550 [DefaultDispatcher-worker-2 @request#9] WARN Exposed - Transaction attempt #2 failed: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+Š[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]. Statement(s): INSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?)
+Ž[0m[0;34morg.jetbrains.exposed.exceptions.ExposedSQLException: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:64)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:141)
+N[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.exec(Transaction.kt:127)
+W[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.execute(Statement.kt:28)
+P[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.executeBatch(Queries.kt:177)
+O[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:106)
+N[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert(Queries.kt:92)
+V[0m[0;34m	at org.jetbrains.exposed.sql.QueriesKt.batchInsert$default(Queries.kt:87)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:184)
+c[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache$flushInserts$ids$1.invoke(EntityCache.kt:183)
+‡[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptorKt.executeAsPartOfEntityLifecycle(EntityLifecycleInterceptor.kt:18)
+b[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flushInserts$exposed_dao(EntityCache.kt:183)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:138)
+O[0m[0;34m	at org.jetbrains.exposed.dao.EntityCache.flush(EntityCache.kt:107)
+V[0m[0;34m	at org.jetbrains.exposed.dao.EntityCacheKt.flushCache(EntityCache.kt:243)
+s[0m[0;34m	at org.jetbrains.exposed.dao.EntityLifecycleInterceptor.beforeCommit(EntityLifecycleInterceptor.kt:74)
+O[0m[0;34m	at org.jetbrains.exposed.sql.Transaction.commit(Transaction.kt:69)
+–[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:216)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.access$inTopLevelTransaction$run(ThreadLocalTransactionManager.kt:1)
+›[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$inTopLevelTransaction$1.invoke(ThreadLocalTransactionManager.kt:241)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+’[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.inTopLevelTransaction(ThreadLocalTransactionManager.kt:240)
+‘[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt$transaction$1.invoke(ThreadLocalTransactionManager.kt:190)
+¡[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.keepAndRestoreTransactionRefAfterRun(ThreadLocalTransactionManager.kt:249)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:160)
+ˆ[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction(ThreadLocalTransactionManager.kt:146)
+[0m[0;34m	at org.jetbrains.exposed.sql.transactions.ThreadLocalTransactionManagerKt.transaction$default(ThreadLocalTransactionManager.kt:145)
+J[0m[0;34m	at tictactoeonline.models.UsersRepository.create(Users.kt:25)
+d[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invokeSuspend(Routing.kt:166)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+Y[0m[0;34m	at tictactoeonline.plugins.RoutingKt$configureRouting$1$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+E[0m[0;34m	at io.ktor.routing.Routing.executeResult(Routing.kt:155)
+B[0m[0;34m	at io.ktor.routing.Routing.interceptor(Routing.kt:39)
+W[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invokeSuspend(Routing.kt:107)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+L[0m[0;34m	at io.ktor.routing.Routing$Feature$install$1.invoke(Routing.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+z[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invokeSuspend(TestApplicationEngine.kt:296)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+o[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$callInterceptor$1.invoke(TestApplicationEngine.kt)
+i[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invokeSuspend(TestApplicationEngine.kt:50)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+_[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$2.invoke(TestApplicationEngine.kt)
+X[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.loop(SuspendFunctionGun.kt:248)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.proceed(SuspendFunctionGun.kt:116)
+[[0m[0;34m	at io.ktor.util.pipeline.SuspendFunctionGun.execute(SuspendFunctionGun.kt:136)
+F[0m[0;34m	at io.ktor.util.pipeline.Pipeline.execute(Pipeline.kt:78)
+„[0m[0;34m	at io.ktor.server.testing.TestApplicationEngine$handleRequest$pipelineJob$1.invokeSuspend(TestApplicationEngine.kt:295)
+f[0m[0;34m	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+L[0m[0;34m	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:106)
+Z[0m[0;34m	at kotlinx.coroutines.internal.LimitedDispatcher.run(LimitedDispatcher.kt:42)
+G[0m[0;34m	at kotlinx.coroutines.scheduling.TaskImpl.run(Tasks.kt:95)
+e[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler.runSafely(CoroutineScheduler.kt:570)
+n[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.executeTask(CoroutineScheduler.kt:750)
+l[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.runWorker(CoroutineScheduler.kt:677)
+f[0m[0;34m	at kotlinx.coroutines.scheduling.CoroutineScheduler$Worker.run(CoroutineScheduler.kt:664)
+ã[0m[0;34mCaused by: org.h2.jdbc.JdbcBatchUpdateException: Unique index or primary key violation: "PUBLIC.USERS_EMAIL_UNIQUE_INDEX_4 ON PUBLIC.USERS(EMAIL NULLS FIRST) VALUES ( /* 1 */ 'alex@hyperskill.org' )"; SQL statement:
+I[0m[0;34mINSERT INTO USERS (EMAIL, PASSWORD) VALUES (?, ?) [23505-214]
+_[0m[0;34m	at org.h2.jdbc.JdbcPreparedStatement.executeBatch(JdbcPreparedStatement.java:1269)
+[0m[0;34m	at org.jetbrains.exposed.sql.statements.jdbc.JdbcPreparedStatementImpl.executeBatch(JdbcPreparedStatementImpl.kt:48)
+o[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.execInsertFunction(InsertStatement.kt:123)
+l[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:131)
+k[0m[0;34m	at org.jetbrains.exposed.sql.statements.InsertStatement.executeInternal(InsertStatement.kt:12)
+f[0m[0;34m	at org.jetbrains.exposed.sql.statements.Statement.executeIn$exposed_core(Statement.kt:62)
+)[0m[0;34m	... 62 common frames omitted
 [0m[0;34m
 [0m[0;34mpost("/signin")
-S[0m[0;34mreceivedText =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
-N[0m[0;34muser =UserCredentials(email=alex@hyperskill.org, password=hs2023)
+M[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"1234"} 
+‰[0m[0;34m08:49:23.719 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+§[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=1234)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=1234)
+³[0m[0;34m08:49:23.852 [DefaultDispatcher-worker-2 @request#13] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+1[0m[0;34muserDAO = alex@hyperskill.org hs2023
+[0m[0;34m
+[0m[0;34mpost("/signin")
+O[0m[0;34muserJson =  { "email":"alex@hyperskill.org", "password":"hs2023"} 
+‰[0m[0;34m08:49:23.956 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+«[0m[0;34muserSerializable = UserDeserializer(email=alex@hyperskill.org, password=hs2023)deserializedUser = UserDeserializer(email=alex@hyperskill.org, password=hs2023)
+³[0m[0;34m08:49:24.051 [DefaultDispatcher-worker-2 @request#17] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+1[0m[0;34muserDAO = alex@hyperskill.org hs2023
 [0m[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.VQIBO0jQ8qW-308raJtSrvqufTEPDWcJyQsfwjnjTLQ
 [0m[0;34m
 [0m[0;34mpost("/signin")
-S[0m[0;34mreceivedText =  { "email":"mira@hyperskill.org", "password":"112233"} 
-N[0m[0;34muser =UserCredentials(email=mira@hyperskill.org, password=112233)
+O[0m[0;34muserJson =  { "email":"mira@hyperskill.org", "password":"112233"} 
+‰[0m[0;34m08:49:24.188 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+«[0m[0;34muserSerializable = UserDeserializer(email=mira@hyperskill.org, password=112233)deserializedUser = UserDeserializer(email=mira@hyperskill.org, password=112233)
+³[0m[0;34m08:49:24.301 [DefaultDispatcher-worker-2 @request#21] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+1[0m[0;34muserDAO = mira@hyperskill.org 112233
 [0m[0;34mtoken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.Q5JRRLXBVRbu16BcvcQNUMj_WXrEmFDLPM5QZYA9DFA
 [1;31m
 Start test 4[0m
-h[0;34m10:34:48.312 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
-V[0m[0;34m10:34:48.314 [main] INFO ktor.test - Application started in 0.002 seconds.
+h[0;34m08:49:24.392 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m08:49:24.393 [main] INFO ktor.test - Application started in 0.001 seconds.
+[0m[0;34m
+6[0m[0;34m----RELOAD NO. 3,  APP RELOADS NO. 1-----
 [0m[0;34m
 [0m[0;34mpost("/game")
+‰[0m[0;34m08:49:24.593 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+“[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
 7[0m[0;34muserEmail from Token = mira@hyperskill.org
 "[0m[0;34mcall.receiveText() = {
 1[0m[0;34m    "player1": "mira@hyperskill.org",
@@ -44,9 +312,28 @@
 [0m[0;34m    "size": "4x3",
  [0m[0;34m    "private": false
 [0m[0;34m}, isBlank = false
-,[0m[0;34mcatch => Creating a game failed
+t[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=mira@hyperskill.org, player2=, size=4x3, private=false)
+[0m[0;34mfalse
+[0m[0;34mAfter
+³[0m[0;34m08:49:24.820 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@2d2c8bc1
+ [0m[0;34m08:49:24.924 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+5[0m[0;34mfindByEmail(newGameSetup.player2) = null
+³[0m[0;34m08:49:25.034 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+£[0m[0;34m08:49:25.176 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+ˆ[0m[0;34m08:49:25.179 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
+>[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@6e228fb8
+œ[0m[0;34m08:49:25.296 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+«[0m[0;34mtry => successGamePathRespond = {"game_id":1,"status":"New game started","player1":"mira@hyperskill.org","player2":"","size":"4x3","private":false,"token":""}
+ã[0m[0;34m08:49:25.394 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+œ[0m[0;34m08:49:25.395 [DefaultDispatcher-worker-3 @request#25] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+?[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null))]
+[0m[0;34mNOW what
 [0m[0;34m
 [0m[0;34mpost("/game")
+‰[0m[0;34m08:49:25.526 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+“[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsZXhAaHlwZXJza2lsbC5vcmcifQ.v1j3WkYqH1zb7vO6D7ylINhB47yp1HFrrmjYT8vwPO8
 7[0m[0;34muserEmail from Token = alex@hyperskill.org
 "[0m[0;34mcall.receiveText() = {
 [0m[0;34m    "player1": "",
@@ -54,4 +341,106 @@
 [0m[0;34m    "size": "3x6",
 [0m[0;34m    "private": true
 [0m[0;34m}, isBlank = false
-,[0m[0;34mcatch => Creating a game failed
+s[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=, player2=alex@hyperskill.org, size=3x6, private=true)
+[0m[0;34mfalse
+[0m[0;34mAfter
+ [0m[0;34m08:49:25.624 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+5[0m[0;34mfindByEmail(newGameSetup.player1) = null
+³[0m[0;34m08:49:25.735 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@605fb2fc
+³[0m[0;34m08:49:25.844 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'alex@hyperskill.org'
+È[0m[0;34m08:49:26.306 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 1, TRUE, '3x6', 'egUw6osyw4v3NEJHCCkf2e2gDpa6eyEh')
+>[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@7f7b4c00
+œ[0m[0;34m08:49:26.478 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+Ê[0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"alex@hyperskill.org","size":"3x6","private":true,"token":"egUw6osyw4v3NEJHCCkf2e2gDpa6eyEh"}
+ã[0m[0;34m08:49:26.730 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+œ[0m[0;34m08:49:26.733 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+œ[0m[0;34m08:49:26.736 [DefaultDispatcher-worker-2 @request#29] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+f[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org))]
+[0m[0;34mNOW what
+[1;31m
+Start test 5[0m
+h[0;34m08:49:26.859 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+V[0m[0;34m08:49:26.860 [main] INFO ktor.test - Application started in 0.002 seconds.
+[0m[0;34m
+6[0m[0;34m----RELOAD NO. 4,  APP RELOADS NO. 1-----
+[0m[0;34m
+[0m[0;34mget("/games")
+[0m[0;34mallGames = []
+ã[0m[0;34m08:49:27.006 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+œ[0m[0;34m08:49:27.008 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+œ[0m[0;34m08:49:27.010 [DefaultDispatcher-worker-2 @request#33] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+Ò[0m[0;34mregisteredGames = [GameRegistrar(game_id=1, player1=mira@hyperskill.org, player2=, size=4x3, private=false), GameRegistrar(game_id=2, player1=, player2=alex@hyperskill.org, size=3x6, private=true)]
+[1;31m
+Start test 6[0m
+[1;31m
+Start test 7[0m
+h[0;34m08:49:27.155 [main] INFO ktor.test - Autoreload is disabled because the development mode is off.
+T[0m[0;34m08:49:27.156 [main] INFO ktor.test - Application started in 0.0 seconds.
+[0m[0;34m
+6[0m[0;34m----RELOAD NO. 5,  APP RELOADS NO. 1-----
+	[0;34m
+[0m[0;34mpost("/game")
+‰[0m[0;34m08:49:27.361 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+“[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
+7[0m[0;34muserEmail from Token = mira@hyperskill.org
+"[0m[0;34mcall.receiveText() = {
+1[0m[0;34m    "player1": "mira@hyperskill.org",
+[0m[0;34m    "player2": "",
+[0m[0;34m    "size": "4x3",
+ [0m[0;34m    "private": false
+[0m[0;34m}, isBlank = false
+t[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=mira@hyperskill.org, player2=, size=4x3, private=false)
+[0m[0;34mfalse
+[0m[0;34mAfter
+³[0m[0;34m08:49:28.076 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player1) = tictactoeonline.models.UserDAO@181bbb1f
+ [0m[0;34m08:49:28.185 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+5[0m[0;34mfindByEmail(newGameSetup.player2) = null
+³[0m[0;34m08:49:28.289 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+£[0m[0;34m08:49:28.384 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT SETTING_VALUE FROM INFORMATION_SCHEMA.SETTINGS WHERE SETTING_NAME = 'MODE'
+ˆ[0m[0;34m08:49:28.386 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER1, PRIVATE, "SIZE") VALUES ('[[" "," "," "],[" "," "," "],[" "," "," "],[" "," "," "]]', 1, 'New game started', 2, FALSE, '4x3')
+>[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@2610698b
+œ[0m[0;34m08:49:28.491 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+«[0m[0;34mtry => successGamePathRespond = {"game_id":1,"status":"New game started","player1":"mira@hyperskill.org","player2":"","size":"4x3","private":false,"token":""}
+ã[0m[0;34m08:49:28.819 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+œ[0m[0;34m08:49:28.821 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+œ[0m[0;34m08:49:28.822 [DefaultDispatcher-worker-4 @request#37] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org)), ((3, 1), (mira@hyperskill.org, null))]
+[0m[0;34mNOW what
+[0m[0;34m
+[0m[0;34mpost("/game")
+‰[0m[0;34m08:49:29.625 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS
+A[0m[0;34mallUser = [alex@hyperskill.org, mira@hyperskill.org]
+“[0m[0;34mjwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1pcmFAaHlwZXJza2lsbC5vcmcifQ.5_G2rDHUYjJFzrqih0HXGuNTxxQMo6S5A0YFdFD9J8Q
+7[0m[0;34muserEmail from Token = mira@hyperskill.org
+"[0m[0;34mcall.receiveText() = {
+[0m[0;34m    "player1": "",
+1[0m[0;34m    "player2": "mira@hyperskill.org",
+[0m[0;34m    "size": "3x6",
+[0m[0;34m    "private": true
+[0m[0;34m}, isBlank = false
+s[0m[0;34mnewGameSetup = NewGameSetupDeserializer(player1=, player2=mira@hyperskill.org, size=3x6, private=true)
+[0m[0;34mfalse
+[0m[0;34mAfter
+ [0m[0;34m08:49:29.852 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = ''
+5[0m[0;34mfindByEmail(newGameSetup.player1) = null
+³[0m[0;34m08:49:30.137 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+X[0m[0;34mfindByEmail(newGameSetup.player2) = tictactoeonline.models.UserDAO@72f3c9f7
+³[0m[0;34m08:49:30.270 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.EMAIL = 'mira@hyperskill.org'
+È[0m[0;34m08:49:30.360 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - INSERT INTO GAMES (FIELD, GAME_ID, GAME_STATUS, PLAYER2, PRIVATE, "SIZE", TOKEN) VALUES ('[[" "," "," "," "," "," "],[" "," "," "," "," "," "],[" "," "," "," "," "," "]]', 2, 'New game started', 2, TRUE, '3x6', 'JlIPglvvDuEmg6FAHfD1gpB2REPxTxMb')
+>[0m[0;34mgameDAO = tictactoeonline.models.GameDAO@464cf63f
+œ[0m[0;34m08:49:30.459 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+Ê[0m[0;34mtry => successGamePathRespond = {"game_id":2,"status":"New game started","player1":"","player2":"mira@hyperskill.org","size":"3x6","private":true,"token":"JlIPglvvDuEmg6FAHfD1gpB2REPxTxMb"}
+ã[0m[0;34m08:49:30.602 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT GAMES.ID, GAMES.GAME_ID, GAMES.GAME_STATUS, GAMES.FIELD, GAMES.PLAYER1, GAMES.PLAYER2, GAMES."SIZE", GAMES.PRIVATE, GAMES.TOKEN FROM GAMES
+œ[0m[0;34m08:49:30.605 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 2
+œ[0m[0;34m08:49:30.608 [DefaultDispatcher-worker-4 @request#41] DEBUG Exposed - SELECT USERS.ID, USERS.EMAIL, USERS.PASSWORD FROM USERS WHERE USERS.ID = 1
+´[0m[0;34mallGames = [((1, 1), (mira@hyperskill.org, null)), ((2, 2), (null, alex@hyperskill.org)), ((3, 1), (mira@hyperskill.org, null)), ((4, 2), (null, mira@hyperskill.org))]
+[0m[0;34mNOW what
+[0m[0;34m
+![0m[0;34mpost("/game/1/join")
+[0m[0;34m
+"[0m[0;34mget("/game/1/status")
+[0m[0;34m
+"[0m[0;34mget("/game/2/status")

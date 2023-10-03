@@ -21,7 +21,6 @@ class UserDAO(id: EntityID<Int>) : IntEntity(id) {
     var password by Users.password
 }
 
-
 class UsersRepository {
     fun create(email: String, password: String) = transaction {
         UserDAO.new {
@@ -63,4 +62,5 @@ class UsersRepository {
     fun findByEmail(email: String) = transaction {
         UserDAO.find { Users.email eq email }.singleOrNull()
     }
+
 }

@@ -12,8 +12,37 @@ import io.ktor.response.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
+import org.jetbrains.exposed.sql.transactions.transaction
 import tictactoeonline.*
+import tictactoeonline.models.*
 
+
+@Serializable
+data class UserDeserializer(val email: String, val password: String)
+
+@Serializable
+data class NewGameSetupDeserializer(val player1: String, val player2: String, val size: String, val private: Boolean)
+
+@Serializable
+data class GamePathSuccessRespondSerializer(
+    var game_id: Int,
+    var status: String,
+    var player1: String? = null,
+    var player2: String? = null,
+    var size: String? = null,
+    var private: Boolean,
+    var token: String?
+)
+
+
+@Serializable
+data class GameRegistrar(
+    var game_id: Int,
+    var player1: String,
+    var player2: String,
+    var size: String,
+    var private: Boolean,
+)
 
 
 @Serializable
@@ -29,6 +58,7 @@ data class Game(
 @Serializable
 enum class GameStatus(val status: String) {
     NOT_STARTED("game not started"),
+    NEW_GAME_STARTED("New game started"),
     FIRST_PLAYER_MOVE("1st player's move"),
     SECOND_PLAYER_MOVE("2nd player's move"),
     FIRST_PLAYER_WON("1st player won"),
@@ -40,8 +70,7 @@ enum class GameStatus(val status: String) {
     }
 }
 
-@Serializable
-data class GameSetupInfo(val player1: String, val player2: String, val size: String)
+
 
 @Serializable
 data class RespondsForGameStep(
@@ -52,13 +81,6 @@ data class RespondsForGameStep(
     var size: String? = null
 )
 
-@Serializable
-data class GameRegistrar(
-    var game_id: Int,
-    var player1: String,
-    var player2: String,
-    var size: String
-)
 
 @Serializable
 enum class RespondsStatus(val status: String) {
@@ -77,10 +99,6 @@ enum class RespondsStatus(val status: String) {
 @Serializable
 data class PlayerMove(val move: String)
 
-@Serializable
-data class UserCredentials(val email: String, val password: String)
-
-
 // To store all successfully registered emails
 @Serializable
 val registeredEmails = mutableMapOf<String, String>()
@@ -90,7 +108,46 @@ var allGames = mutableListOf<Game>()
 
 var GAMEID = 1
 
+fun validateJsonUser(userJson: String): UserDeserializer? {
+    val user = Json.decodeFromString<UserDeserializer>(userJson)
+    print("userSerializable = $user")
+
+    // check if email and passwords are blank
+    if (user.email.isBlank() || user.password.isBlank()) {
+        return null
+    }
+    return user
+}
+
+fun createJWTokenForGame(email: String): String? {
+    return JWT.create()
+        .withClaim("email", email)
+        .sign(Algorithm.HMAC256(secret))
+}
+
+fun generateRandomToken(): String {
+    val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return (1..32)
+        .map { allowedChars.random() }
+        .joinToString("")
+}
+
+fun getEmailFromJWT(call: ApplicationCall): String {
+    val principal = call.principal<JWTPrincipal>()
+    val userEmail = principal!!.payload.getClaim("email").asString()
+    val authorizationHeader = call.request.header("Authorization")
+    val jwtToken = authorizationHeader?.removePrefix("Bearer ")
+    println("jwtToken = $jwtToken")
+    println("userEmail from Token = $userEmail")
+    return userEmail
+}
+
+val userRepository = UsersRepository()
+
 fun Application.configureRouting() {
+    val usersRepository = UsersRepository()
+    val gameRepository = GamesRepository()
+    val gameRoomsRepository = GameRoomsRepository()
 
     routing {
 
@@ -98,17 +155,15 @@ fun Application.configureRouting() {
             println()
             println("post(\"/signup\")")
 
-            val receivedText = call.receiveText()
-            println("receivedText = $receivedText")
+            val userJson = call.receiveText()
+            println("userJson = $userJson")
 
             try {
-                val user = Json.decodeFromString<UserCredentials>(receivedText)
-                print("user = $user")
-                if (user.email.isBlank() || user.password.isBlank()) throw Exception("Blank email or password")
-                if (doesEmailExist(user.email)) throw Exception("Email already exists")
+                val deserializedUser = validateJsonUser(userJson) ?: throw Exception("Wrong Json input")
+                println("deserializedUser = $deserializedUser")
 
-                registeredEmails[user.email] = user.password
-
+                // Add user to DB
+                val userDAO = usersRepository.create(deserializedUser.email, deserializedUser.password)
                 call.respondText(
                     text = Json.encodeToString(mapOf("status" to "Signed Up")),
                     contentType = ContentType.Application.Json,
@@ -127,25 +182,29 @@ fun Application.configureRouting() {
             println()
             println("post(\"/signin\")")
 
-            val receivedText = call.receiveText()
-            println("receivedText = $receivedText")
+            val userJson = call.receiveText()
+            println("userJson = $userJson")
+
+            transaction {
+                println("allUser = ${UserDAO.all().map { it.email }}")
+            }
 
             try {
-                val user = Json.decodeFromString<UserCredentials>(receivedText)
-                println("user =$user")
-                if (!doesEmailExist(user.email)) throw Exception("No such user exists")
-                if (registeredEmails[user.email] != user.password) throw Exception("No such user exists")
+                val deserializedUser = validateJsonUser(userJson) ?: throw Exception("Wrong Json input")
+                println("deserializedUser = $deserializedUser")
 
-                val token = JWT.create()
-                    .withClaim("email", user.email)
-                    .sign(Algorithm.HMAC256(secret))
+                val userDAO = usersRepository.findByEmail(deserializedUser.email)
+                println("userDAO = ${userDAO?.email} ${userDAO?.password}")
+                if (userDAO == null) throw Exception("No such user exists")
+                if (userDAO.password != deserializedUser.password) throw Exception("No such user exists")
+
+                val token = createJWTokenForGame(deserializedUser.email) ?: throw Exception("Unable to create JWT token")
 
                 call.respondText(
                     text = Json.encodeToString(mapOf("status" to "Signed In", "token" to token)),
                     contentType = ContentType.Application.Json,
                     status = HttpStatusCode.OK
                 )
-
                 println("token = $token")
             } catch (_:Exception) {
                 call.respondText(
@@ -156,44 +215,73 @@ fun Application.configureRouting() {
             }
         }  // end of post("/signin")
 
+
         authenticate("gameAuth") {
+
             post("/game") {
                 println()
                 println("post(\"/game\")")
                 try {
-                    val principal = call.principal<JWTPrincipal>()
-                    val userEmail = principal!!.payload.getClaim("email").asString()
-                    println("userEmail from Token = $userEmail")
+                    transaction {
+                        println("allUser = ${UserDAO.all().map { it.email }}")
+                    }
 
-                    val receivedText = call.receiveText()
-                    println("call.receiveText() = $receivedText, isBlank = ${receivedText.isBlank()}")
+                    val userEmail = getEmailFromJWT(call)
 
-                    val gameSetupInfo = Json.decodeFromString<GameSetupInfo>(receivedText)
-                    println("gameSetupInfo = $gameSetupInfo")
+                    val gameSetupJson = call.receiveText()
+                    println("call.receiveText() = $gameSetupJson, isBlank = ${gameSetupJson.isBlank()}")
 
-                    if (userEmail != gameSetupInfo.player1 && userEmail != gameSetupInfo.player2) throw Exception("Wrong Game setup")
+                    val newGameSetup = Json.decodeFromString<NewGameSetupDeserializer>(gameSetupJson)
+                    println("newGameSetup = $newGameSetup")
 
-//                    if (userEmail == gameSetupInfo.player1) {
-//                        if (gameSetupInfo.player2 == "") throw Exception("Identical emails")
-//                    }
-//                    if (userEmail == gameSetupInfo.player2) {
-//                        if (gameSetupInfo.player1 == "") throw Exception("Identical emails")
-//                    }
+                    println(!(userEmail != newGameSetup.player1 || userEmail != newGameSetup.player2))
+                    if (!(userEmail != newGameSetup.player1 || userEmail != newGameSetup.player2)) throw Exception("Wrong Game setup")
+                    println("After")
+                    println("findByEmail(newGameSetup.player1) = ${usersRepository.findByEmail(newGameSetup.player1)}")
+                    println("findByEmail(newGameSetup.player2) = ${usersRepository.findByEmail(newGameSetup.player2)}")
 
-                    val respondAndGame = initialSetupOfRespondAndGame(gameSetupInfo)
-                    val respondForGameStep = respondAndGame.first
-                    val newGame = respondAndGame.second
 
-                    println("try => respondForGameStep = ${Json.encodeToString(respondForGameStep)}")
-                    println("try => newGame = ${Json.encodeToString(newGame)}")
+
+                    // Create GameDB
+                    val player1 = if (newGameSetup.player1 == userEmail) usersRepository.findByEmail(newGameSetup.player1) else null
+                    val player2 = if (newGameSetup.player2 == userEmail) usersRepository.findByEmail(newGameSetup.player2) else null
+                    val size = newGameSetup.size
+                    val private = newGameSetup.private
+                    val field = Json.encodeToString(sizeToMListOfMList(size))
+                    val ranToken = if (private) generateRandomToken() else null
+
+                    val gameDAO = gameRepository.create(GAMEID++, field, player1, player2, size, private, ranToken)
+
+                    println("gameDAO = $gameDAO")
+
+                    val successGamePathRespond = GamePathSuccessRespondSerializer(
+                            game_id = transaction { gameDAO.game_id },
+                            status = transaction { gameDAO.gameStatus },
+                            player1 = transaction { gameDAO.player1?.email ?: ""},
+                            player2 = transaction { gameDAO.player2?.email ?: ""},
+                            size = transaction { gameDAO.size },
+                            private = transaction { gameDAO.isPrivate },
+                            token =  transaction { gameDAO.token ?: ""},
+                        )
+
+                    println("try => successGamePathRespond = ${Json.encodeToString(successGamePathRespond)}")
+
+                    transaction {
+                        val allGames = GameDAO.all().map { Pair(it.id.value, it.game_id) to Pair(it.player1?.email, it.player2?.email) }
+                        println("allGames = $allGames")
+                    }
 
                     call.respondText(
-                        text = Json.encodeToString(respondForGameStep),
+                        text = Json.encodeToString(successGamePathRespond),
                         contentType = ContentType.Application.Json,
                         status = HttpStatusCode.OK
                     )
+
+                    println("NOW what")
                 } catch (e: Exception) {
                     println("catch => Creating a game failed")
+                    println("e = $e")
+                    println("${e.message}, ${e.cause}, ${e.localizedMessage}")
                     call.respondText(
                         text = Json.encodeToString(mapOf("status" to "Creating a game failed")),
                         contentType = ContentType.Application.Json,
@@ -360,13 +448,26 @@ fun Application.configureRouting() {
 
                 println("allGames = ${Json.encodeToString(allGames)}")
 
-                val gamesToRegister = mutableListOf<GameRegistrar>()
-                allGames.forEach { registerNewGames(gamesToRegister, it.game_id, it.player1!!, it.player2!!, it.size!!) }
+                val registeredGames = mutableListOf<GameRegistrar>()
+                transaction {
+                    val allGames = GameDAO.all().map { it }
+                    for (game in allGames) {
+                        registeredGames.add(
+                            GameRegistrar(
+                                game_id = game.game_id,
+                                player1 = game.player1?.email ?: "",
+                                player2 = game.player2?.email ?: "",
+                                size =game.size,
+                                private = game.isPrivate
+                            )
+                        )
+                    }
+                }
 
-                println("gamesToRegister = $gamesToRegister")
+                println("registeredGames = $registeredGames")
 
                 call.respondText(
-                    text = Json.encodeToString(gamesToRegister),
+                    text = Json.encodeToString(registeredGames),
                     contentType = ContentType.Application.Json,
                     status = HttpStatusCode.OK
                 )
@@ -393,12 +494,12 @@ fun changePlayerTurn(player: String): String {
 }
 
 // ------Initial Setup Functions---mostly used in get("/post")--------//
-fun initialSetupOfRespondAndGame(gameSetupInfo: GameSetupInfo): Pair<RespondsForGameStep, Game> {
+fun initialSetupOfRespondAndGame(newGameSetupDeserializer: NewGameSetupDeserializer): Pair<RespondsForGameStep, Game> {
     val respondForGameStep = getRespondForGameStep(
         status = RespondsStatus.NEW_GAME_STARTER.status,
-        player1 = gameSetupInfo.player1,
-        player2 = gameSetupInfo.player2,
-        size = gameSetupInfo.size
+        player1 = newGameSetupDeserializer.player1,
+        player2 = newGameSetupDeserializer.player2,
+        size = newGameSetupDeserializer.size
     )
 
     val newGame = newGameInitialSetup(
@@ -429,9 +530,9 @@ fun getRespondForGameStep(status: String, player1: String?, player2: String?, si
     )
 }
 
-fun registerNewGames(gamesToRegister: MutableList<GameRegistrar>, game_id: Int, player1: String, player2: String, size: String) {
-    gamesToRegister.add(GameRegistrar(game_id, player1, player2, size))
-}
+//fun registerNewGames(gamesToRegister: MutableList<GameRegistrar>, game_id: Int, player1: String, player2: String, size: String) {
+//    gamesToRegister.add(GameRegistrar(game_id, player1, player2, size))
+//}
 
 fun newGameInitialSetup(gameStatus: String, player1: String, player2: String, size: String): Game {
     // generate the fieldListOfList
@@ -453,3 +554,24 @@ fun newGameInitialSetup(gameStatus: String, player1: String, player2: String, si
 
 
 // ------ END Of Initial Setup Functions---mostly used in get("/post")--------//
+
+
+
+//                    var gameDAO = transaction {
+//                        val player1Json = if (newGameSetup.player1 == "") null else newGameSetup.player1
+//                        val player2Json = if (newGameSetup.player2 == "") null else newGameSetup.player2
+//                        val sizeJson = newGameSetup.size
+//                        val privateJson = newGameSetup.private
+//                        for (game in GameDAO.all()) {
+//                            val player1 = game.player1?.email
+//                            val player2 = game.player2?.email
+//                            val size = game.size
+//                            val private = game.isPrivate
+//                            if (player1Json == player1 && player2Json == player2 && sizeJson == size && privateJson == private) {
+//                                return@transaction game
+//                            }
+//                        }
+//                        return@transaction null
+//                    }
+//
+//                    println("gameDAO = $gameDAO")

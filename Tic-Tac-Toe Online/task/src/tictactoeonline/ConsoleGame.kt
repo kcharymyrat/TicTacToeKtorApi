@@ -218,6 +218,11 @@ fun prettyPrintField(field: MutableList<MutableList<String>>, isEmpty: Boolean =
     }
 }
 
+fun sizeToMListOfMList(size: String): MutableList<MutableList<String>> {
+    val validSize = validateFieldSize(size)
+    return createListOfListField(validSize.first, validSize.second)
+}
+
 fun createListOfListField(x: Int, y:Int): MutableList<MutableList<String>> {
     val outerList = mutableListOf<MutableList<String>>()
 
