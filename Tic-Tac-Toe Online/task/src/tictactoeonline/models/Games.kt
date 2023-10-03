@@ -14,8 +14,10 @@ object Games : IntIdTable() {
     val game_id = integer("game_id")
     val gameStatus: Column<String> = varchar("game_status", 20)
     val field: Column<String> = text("field")
-    val player1 = reference("player1", Users).nullable()
-    val player2 = reference("player2", Users).nullable()
+//    val player1 = reference("player1", Users).nullable()
+//    val player2 = reference("player2", Users).nullable()
+    val player1 = varchar("player1", 255).nullable()
+    val player2 = varchar("player2", 255).nullable()
     val size: Column<String> = varchar("size", 10)
     val isPrivate: Column<Boolean> = bool("private")
     val token: Column<String?> = varchar("token", 32).nullable()
@@ -27,15 +29,15 @@ class GameDAO(id: EntityID<Int>) : IntEntity(id) {
     var game_id by Games.game_id
     var gameStatus by Games.gameStatus
     var field by Games.field
-    var player1 by UserDAO optionalReferencedOn Games.player1
-    var player2 by UserDAO optionalReferencedOn Games.player2
+    var player1 by Games.player1
+    var player2 by Games.player2
     var size by Games.size
     var isPrivate by Games.isPrivate
     var token by Games.token
 }
 
 class GamesRepository {
-    fun create(game_id: Int, field: String, player1: UserDAO?, player2: UserDAO?, size: String, private: Boolean, token: String?) = transaction {
+    fun create(game_id: Int, field: String, player1: String?, player2: String?, size: String, private: Boolean, token: String?) = transaction {
         GameDAO.new {
             this.game_id = game_id
             this.gameStatus = GameStatus.NEW_GAME_STARTED.status
@@ -48,7 +50,7 @@ class GamesRepository {
         }
     }
 
-    fun addPlayer(id: Int, player: UserDAO) = transaction {
+    fun addPlayer(id: Int, player: String) = transaction {
         GameDAO.findById(id)?.apply {
             if (this.player1 == null && this.player2 != null) this.player1 = player
             if (this.player1 != null && this.player2 == null) this.player2 = player

@@ -12,6 +12,7 @@ import io.ktor.response.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import kotlinx.serialization.*
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
 import tictactoeonline.*
 import tictactoeonline.models.*
@@ -54,6 +55,39 @@ data class GameStatusRespond(
     var size: String,
     var private: Boolean,
     var token: String,
+)
+
+
+@Serializable
+class GamesPaginatedResponse(
+    var totalPages: Long,
+    var totalElements: Long,
+    var page: Int,
+    var size: Int,
+    var numberOfElements: Int,
+    var content: MutableList<GameRegistrar>
+)
+
+@Serializable
+data class MyGameRegistrar(
+    var game_id: Int,
+    var game_status: String,
+    var field: MutableList<MutableList<String>>,
+    var player1: String,
+    var player2: String,
+    var size: String,
+    var private: Boolean,
+    var token: String
+)
+
+@Serializable
+class MyGamesPaginatedResponse(
+    var totalPages: Long,
+    var totalElements: Long,
+    var page: Int,
+    var size: Int,
+    var numberOfElements: Int,
+    var content: MutableList<MyGameRegistrar>
 )
 
 
@@ -249,12 +283,10 @@ fun Application.configureRouting() {
                     println(!(userEmail != newGameSetup.player1 || userEmail != newGameSetup.player2))
                     if (!(userEmail != newGameSetup.player1 || userEmail != newGameSetup.player2)) throw Exception("Wrong Game setup")
                     println("After")
-                    println("findByEmail(newGameSetup.player1) = ${usersRepository.findByEmail(newGameSetup.player1)}")
-                    println("findByEmail(newGameSetup.player2) = ${usersRepository.findByEmail(newGameSetup.player2)}")
 
                     // Create GameDB
-                    val player1 = if (newGameSetup.player1 == userEmail) usersRepository.findByEmail(newGameSetup.player1) else null
-                    val player2 = if (newGameSetup.player2 == userEmail) usersRepository.findByEmail(newGameSetup.player2) else null
+                    val player1 = if (newGameSetup.player1 == userEmail) userEmail else null
+                    val player2 = if (newGameSetup.player2 == userEmail) userEmail else null
                     val size = newGameSetup.size
                     val private = newGameSetup.private
                     val field = Json.encodeToString(sizeToMListOfMList(size))
@@ -267,8 +299,8 @@ fun Application.configureRouting() {
                     val successGamePathRespond = GamePathSuccessRespondSerializer(
                             game_id = transaction { gameDAO.game_id },
                             status = transaction { gameDAO.gameStatus },
-                            player1 = transaction { gameDAO.player1?.email ?: ""},
-                            player2 = transaction { gameDAO.player2?.email ?: ""},
+                            player1 = transaction { gameDAO.player1 } ?: newGameSetup.player1,
+                            player2 = transaction { gameDAO.player2 } ?: newGameSetup.player2,
                             size = transaction { gameDAO.size },
                             private = transaction { gameDAO.isPrivate },
                             token =  transaction { gameDAO.token ?: ""},
@@ -277,7 +309,7 @@ fun Application.configureRouting() {
                     println("try => successGamePathRespond = ${Json.encodeToString(successGamePathRespond)}")
 
                     transaction {
-                        val allGames = GameDAO.all().map { Pair(it.id.value, it.game_id) to Pair(it.player1?.email, it.player2?.email) }
+                        val allGames = GameDAO.all().map { Pair(it.id.value, it.game_id) to Pair(it.player1, it.player2) }
                         println("allGames = $allGames")
                     }
 
@@ -312,13 +344,13 @@ fun Application.configureRouting() {
 
 //                    val game = allGames.find { it.game_id == id } ?: throw Exception("No game with game_id = $id")
                     val game = gameRepository.findGameByGameId(game_id) ?: throw Exception("No game with game_id = $game_id")
-                    println("Game: game_id=${game.game_id}, player1=${transaction { game.player1?.email }}, player2=${ transaction { game.player2?.email }}, token=${game.token}}")
+                    println("Game: game_id=${game.game_id}, player1=${transaction { game.player1}}, player2=${ transaction { game.player2}}, token=${game.token}")
 
 //                    if (game.isPrivate && token == null) throw Exception("Game is private, no token provided!")
                      if (game.token != token) throw Exception("Game is private, no token provided!")
 
-                    val player1 = transaction { game.player1?.email }
-                    val player2 = transaction { game.player2?.email }
+                    val player1 = transaction { game.player1 }
+                    val player2 = transaction { game.player2 }
 
                     if(!(player1 == null || player2 == null)) throw Exception("Not your game to join")
 
@@ -326,10 +358,13 @@ fun Application.configureRouting() {
                     val email = principal!!.payload.getClaim("email").asString()
                     println("email from token = $email")
 
-                    val userDAO = usersRepository.findByEmail(email) ?: throw Exception("No such user game to join")
+//                    val userDAO = usersRepository.findByEmail(email) ?: throw Exception("No such user game to join")
 
-                    val playerAdded = gameRepository.addPlayer(game.id.value, userDAO) ?: throw Exception("Game was not added!")
-                    val statusUpdated = gameRepository.updateStatus(game.id.value, GameStatus.FIRST_PLAYER_MOVE.status) ?: throw Exception("Game status was not able to update 'status'")
+                    val playerAdded = gameRepository.addPlayer(transaction { game.id.value }, email) ?: throw Exception("Game was not added!")
+                    println("playerAdded : game_id=${playerAdded.game_id}, player1=${transaction { playerAdded.player1}}, player2=${ transaction { playerAdded.player2}}, token=${playerAdded.token}")
+
+                    val statusUpdated = gameRepository.updateStatus(transaction { game.id.value }, GameStatus.FIRST_PLAYER_MOVE.status) ?: throw Exception("Game status was not able to update 'status'")
+                    println("statusUpdated : game_id=${statusUpdated.game_id}, player1=${transaction { statusUpdated.player1}}, player2=${ transaction { statusUpdated.player2}}, token=${statusUpdated.token}")
 
                     call.respondText(
                         text = Json.encodeToString(mapOf("status" to "Joining the game succeeded")),
@@ -438,15 +473,15 @@ fun Application.configureRouting() {
                     // val game = allGames.find { it.game_id == game_id } ?: throw Exception("No game with game_id = $game_id")
 
                     val gameDAO = gameRepository.findGameByGameId(game_id) ?: throw Exception("No game with id=$game_id")
-                    val player1 = transaction { gameDAO.player1?.email }
-                    val player2 = transaction { gameDAO.player2?.email }
+                    val player1 = transaction { gameDAO.player1 }
+                    val player2 = transaction { gameDAO.player2 }
 
                     val principal = call.principal<JWTPrincipal>()
                     val email = principal!!.payload.getClaim("email").asString()
                     println("email = $email")
 
                     println("-------------------------------------------")
-                    println("Game: game_id=${gameDAO.game_id}, player1=${transaction { gameDAO.player1?.email }}, player2=${ transaction { gameDAO.player2?.email }}, token=${gameDAO.token}}")
+                    println("Game: game_id=${gameDAO.game_id}, player1=${transaction { gameDAO.player1 }}, player2=${ transaction { gameDAO.player2 }}, token=${gameDAO.token}}")
                     println("-------------------------------------------")
 
                     if(!(email == player1 || email == player2)) throw Exception("Not your game to check")
@@ -474,40 +509,183 @@ fun Application.configureRouting() {
                         status = HttpStatusCode.Forbidden
                     )
                 }
-
-
-
             } // end of get("/game/{game_id}/status")
 
             get("/games") {
                 println()
                 println("get(\"/games\")")
 
-                println("allGames = ${Json.encodeToString(allGames)}")
+//                val registeredGames = mutableListOf<GameRegistrar>()
+//                transaction {
+//                    val allGames = GameDAO.all().map { it }
+//                    for (game in allGames) {
+//                        registeredGames.add(
+//                            GameRegistrar(
+//                                game_id = game.game_id,
+//                                player1 = game.player1?.email ?: "",
+//                                player2 = game.player2?.email ?: "",
+//                                size =game.size,
+//                                private = game.isPrivate
+//                            )
+//                        )
+//                    }
+//                }
 
-                val registeredGames = mutableListOf<GameRegistrar>()
-                transaction {
-                    val allGames = GameDAO.all().map { it }
-                    for (game in allGames) {
-                        registeredGames.add(
-                            GameRegistrar(
-                                game_id = game.game_id,
-                                player1 = game.player1?.email ?: "",
-                                player2 = game.player2?.email ?: "",
-                                size =game.size,
-                                private = game.isPrivate
+                val pageParam = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
+                val pageSize = 10
+                println("pageParam=$pageParam, pageSize=$pageSize")
+
+                try {
+                    val totalGamesCount = transaction { GameDAO.all().count() }
+                    val totalPages = (totalGamesCount + pageSize - 1) / pageSize
+                    println("totalGamesCount=$totalGamesCount, totalPages=$totalPages")
+
+
+                    val registeredGames = mutableListOf<GameRegistrar>()
+
+                    transaction {
+
+                        val games = GameDAO.all().limit(pageSize, (pageParam * pageSize).toLong())
+
+                        for (game in games) {
+                            registeredGames.add(
+                                GameRegistrar(
+                                    game_id = game.game_id,
+                                    player1 = game.player1 ?: "",
+                                    player2 = game.player2 ?: "",
+                                    size = game.size,
+                                    private = game.isPrivate
+                                )
                             )
-                        )
+                        }
                     }
+
+
+
+                    val response = GamesPaginatedResponse(
+                        totalPages = totalPages,
+                        totalElements = totalGamesCount,
+                        page = pageParam,
+                        size = pageSize,
+                        numberOfElements = registeredGames.size,
+                        content = registeredGames
+                    )
+
+//                val response = mapOf(
+//                    "totalPages" to totalPages,
+//                    "totalElements" to totalGamesCount,
+//                    "page" to pageParam,
+//                    "size" to pageSize,
+//                    "numberOfElements" to registeredGames.size,
+//                    "content" to registeredGames
+//                )
+
+                    println("registeredGames = $registeredGames")
+                    println("response = ${Json.encodeToString(response)}")
+
+                    call.respondText(
+                        text = Json.encodeToString(response),
+                        contentType = ContentType.Application.Json,
+                        status = HttpStatusCode.OK
+                    )
+                } catch (e: Exception) {
+                    println("e = ${e.message}")
                 }
+            }  // end of get("/games")
 
-                println("registeredGames = $registeredGames")
+            get("/games/my") {
+                println()
+                println("get(\"/games/my\")")
 
-                call.respondText(
-                    text = Json.encodeToString(registeredGames),
-                    contentType = ContentType.Application.Json,
-                    status = HttpStatusCode.OK
-                )
+//                val registeredGames = mutableListOf<GameRegistrar>()
+//                transaction {
+//                    val allGames = GameDAO.all().map { it }
+//                    for (game in allGames) {
+//                        registeredGames.add(
+//                            GameRegistrar(
+//                                game_id = game.game_id,
+//                                player1 = game.player1?.email ?: "",
+//                                player2 = game.player2?.email ?: "",
+//                                size =game.size,
+//                                private = game.isPrivate
+//                            )
+//                        )
+//                    }
+//                }
+
+                val pageParam = call.request.queryParameters["page"]?.toIntOrNull() ?: 0
+                val pageSize = 10
+                println("pageParam=$pageParam, pageSize=$pageSize")
+
+                try {
+                    var totalGamesCount = transaction { GameDAO.all().count() }
+                    var totalPages = (totalGamesCount + pageSize - 1) / pageSize
+                    println("totalGamesCount=$totalGamesCount, totalPages=$totalPages")
+
+                    val emailJWT = getEmailFromJWT(call)
+
+
+                    val registeredGames = mutableListOf<MyGameRegistrar>()
+
+                    transaction {
+                        val myGames = GameDAO.find { (Games.player1 eq emailJWT) or (Games.player2 eq emailJWT) }
+                        totalGamesCount = myGames.count()
+                        totalPages = (totalGamesCount + pageSize - 1) / pageSize
+
+                        val games = myGames.limit(pageSize, (pageParam * pageSize).toLong())
+
+
+
+                        for (game in games) {
+                            val player1 = game.player1 ?: ""
+                            val player2 = game.player2 ?: ""
+                            val status = if (player1.isNotBlank() && player2.isNotBlank()) GameStatus.FIRST_PLAYER_MOVE.status else GameStatus.NOT_STARTED.status
+                            registeredGames.add(
+                                MyGameRegistrar(
+                                    game_id = game.game_id,
+                                    game_status = status,
+                                    field = Json.decodeFromString(game.field),
+                                    player1 = game.player1 ?: "",
+                                    player2 = game.player2 ?: "",
+                                    size = game.size,
+                                    private = game.isPrivate,
+                                    token = game.token ?: ""
+                                )
+                            )
+                        }
+                    }
+
+
+
+                    val response = MyGamesPaginatedResponse(
+                        totalPages = totalPages,
+                        totalElements = totalGamesCount,
+                        page = pageParam,
+                        size = pageSize,
+                        numberOfElements = registeredGames.size,
+                        content = registeredGames
+                    )
+
+//                val response = mapOf(
+//                    "totalPages" to totalPages,
+//                    "totalElements" to totalGamesCount,
+//                    "page" to pageParam,
+//                    "size" to pageSize,
+//                    "numberOfElements" to registeredGames.size,
+//                    "content" to registeredGames
+//                )
+
+                    println("registeredGames = $registeredGames")
+                    println("response = ${Json.encodeToString(response)}")
+
+                    call.respondText(
+                        text = Json.encodeToString(response),
+                        contentType = ContentType.Application.Json,
+                        status = HttpStatusCode.OK
+                    )
+                } catch (e: Exception) {
+                    println("e = ${e.message}")
+                }
             }  // end of get("/games")
 
         } // end of authenticate("gameAuth")

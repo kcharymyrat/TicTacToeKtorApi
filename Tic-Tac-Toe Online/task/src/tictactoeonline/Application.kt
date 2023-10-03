@@ -20,12 +20,10 @@ import tictactoeonline.plugins.*
 const val secret = "ut920BwH09AOEDx5"
 const val myRealm = "Access to TicTacToe Game"
 val driverClassName = "org.h2.Driver"
-val jdbcURL = "jdbc:h2:file:./build/db.mv.db"
+val jdbcURL = "jdbc:h2:file:./build/db"
 
 var reloads = 1
 var appReloads = 1
-
-
 
 
 fun main(args: Array<String>) {

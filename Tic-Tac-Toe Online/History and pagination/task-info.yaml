@@ -1740,5 +1740,9 @@ files:
       }
     learner_created: true
 feedback_link: https://hyperskill.org/learn/step/30567#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">Hyperskill</a>
+    to continue learning.
+  time: "Tue, 03 Oct 2023 13:17:15 UTC"
 record: -1
